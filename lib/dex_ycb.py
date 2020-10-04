@@ -130,7 +130,9 @@ class DexYCBDataset():
   def __getitem__(self, idx):
     s, c, f = self._mapping[idx]
     d = os.path.join(self._data_dir, self._sequences[s], self._serials[c])
-    color_file = os.path.join(d, self._color_format.format(f))
-    depth_file = os.path.join(d, self._depth_format.format(f))
-    label_file = os.path.join(d, self._label_format.format(f))
-    return color_file, depth_file, label_file
+    sample = {
+        'color_file': os.path.join(d, self._color_format.format(f)),
+        'depth_file': os.path.join(d, self._depth_format.format(f)),
+        'label_file': os.path.join(d, self._label_format.format(f)),
+    }
+    return sample
