@@ -24,6 +24,31 @@ _SERIALS = [
     '932122062010',
 ]
 
+_YCB_CLASSES = [
+    '__background__',
+    '002_master_chef_can',
+    '003_cracker_box',
+    '004_sugar_box',
+    '005_tomato_soup_can',
+    '006_mustard_bottle',
+    '007_tuna_fish_can',
+    '008_pudding_box',
+    '009_gelatin_box',
+    '010_potted_meat_can',
+    '011_banana',
+    '019_pitcher_base',
+    '021_bleach_cleanser',
+    '024_bowl',
+    '025_mug',
+    '035_power_drill',
+    '036_wood_block',
+    '037_scissors',
+    '040_large_marker',
+    '051_large_clamp',
+    '052_extra_large_clamp',
+    '061_foam_brick',
+]
+
 
 class DexYCBDataset():
 
@@ -32,10 +57,19 @@ class DexYCBDataset():
     self._split = split
 
     self._data_dir = config.data_dir
+    self._calib_dir = os.path.join(self._data_dir, "calibration")
+    self._model_dir = os.path.join(self._data_dir, "models")
 
     self._color_format = "color_{:06d}.jpg"
     self._depth_format = "aligned_depth_to_color_{:06d}.png"
     self._label_format = "labels_{:06d}.npz"
+    self._h = 480
+    self._w = 640
+
+    self._obj_file = [
+        os.path.join(self._model_dir, x, "textured_simple.obj")
+        for x in _YCB_CLASSES
+    ]
 
     # Seen subjects, camera views, grasped objects.
     if self._setup == 's0':
@@ -98,10 +132,20 @@ class DexYCBDataset():
         sequence_ind = [i for i in range(100) if i // 5 in (7, 11, 15)]
 
     self._subjects = [_SUBJECTS[i] for i in subject_ind]
+
     self._serials = [_SERIALS[i] for i in serial_ind]
+    self._intrinsics = []
+    for s in self._serials:
+      intr_file = os.path.join(self._calib_dir, "intrinsics",
+                               "{}_{}x{}.yml".format(s, self._w, self._h))
+      with open(intr_file, 'r') as f:
+        intr = yaml.load(f, Loader=yaml.FullLoader)
+      intr = intr['color']
+      self._intrinsics.append(intr)
 
     self._sequences = []
     self._mapping = []
+    self._ycb_ids = []
     offset = 0
     for n in self._subjects:
       seq = sorted(os.listdir(os.path.join(self._data_dir, n)))
@@ -121,6 +165,7 @@ class DexYCBDataset():
         s = (offset + i) * np.ones_like(c)
         m = np.vstack((s, c, f)).T
         self._mapping.append(m)
+        self._ycb_ids.append(meta['ycb_ids'])
       offset += len(seq)
     self._mapping = np.vstack(self._mapping)
 
@@ -134,5 +179,19 @@ class DexYCBDataset():
         'color_file': os.path.join(d, self._color_format.format(f)),
         'depth_file': os.path.join(d, self._depth_format.format(f)),
         'label_file': os.path.join(d, self._label_format.format(f)),
+        'intrinsics': self._intrinsics[c],
+        'ycb_ids': self._ycb_ids[s],
     }
     return sample
+
+  @property
+  def h(self):
+    return self._h
+
+  @property
+  def w(self):
+    return self._w
+
+  @property
+  def obj_file(self):
+    return self._obj_file
