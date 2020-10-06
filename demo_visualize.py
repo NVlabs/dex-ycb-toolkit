@@ -52,7 +52,13 @@ def create_scene(sample):
   return scene
 
 
-print('Visualize pose in camera view using pyrender renderer')
+print('Visualizing pose using pyrender 3D viewer')
+
+scene = create_scene(sample)
+
+pyrender.Viewer(scene, run_in_thread=True)
+
+print('Visualizing pose in camera view using pyrender renderer')
 
 scene = create_scene(sample)
 
@@ -67,13 +73,6 @@ im_real = im_real[:, :, ::-1]
 im = 0.33 * im_real.astype(np.float32) + 0.67 * im_render.astype(np.float32)
 im = im.astype(np.uint8)
 
-plt.ion()
 plt.imshow(im)
 plt.tight_layout()
-plt.pause(0.0001)
-
-print('Visualize pose using pyrender 3D viewer')
-
-scene = create_scene(sample)
-
-pyrender.Viewer(scene)
+plt.show()
