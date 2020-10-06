@@ -2,8 +2,6 @@ import os
 import yaml
 import numpy as np
 
-from . import config
-
 _SUBJECTS = [
     '20200709-weiy',
     '20200813-ceppner',
@@ -56,7 +54,7 @@ class DexYCBDataset():
     self._setup = setup
     self._split = split
 
-    self._data_dir = config.data_dir
+    self._data_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
     self._calib_dir = os.path.join(self._data_dir, "calibration")
     self._model_dir = os.path.join(self._data_dir, "models")
 
