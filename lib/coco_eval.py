@@ -55,7 +55,6 @@ class COCOEvaluator():
 
       for y in sample['ycb_ids'] + [255]:
         mask = label['seg'] == y
-        # if np.all(np.logical_not(mask)):
         if np.count_nonzero(mask) == 0:
           continue
         mask = np.asfortranarray(mask)
