@@ -47,6 +47,38 @@ _YCB_CLASSES = [
     '061_foam_brick',
 ]
 
+_MANO_JOINTS = [
+    'wrist',
+    'thumb_mcp',
+    'thumb_pip',
+    'thumb_dip',
+    'thumb_tip',
+    'index_mcp',
+    'index_pip',
+    'index_dip',
+    'index_tip',
+    'middle_mcp',
+    'middle_pip',
+    'middle_dip',
+    'middle_tip',
+    'ring_mcp',
+    'ring_pip',
+    'ring_dip',
+    'ring_tip',
+    'little_mcp',
+    'little_pip',
+    'little_dip',
+    'little_tip'
+]
+
+_MANO_JOINT_CONNECT = [
+    [0,  1], [ 1,  2], [ 2,  3], [ 3,  4],
+    [0,  5], [ 5,  6], [ 6,  7], [ 7,  8],
+    [0,  9], [ 9, 10], [10, 11], [11, 12],
+    [0, 13], [13, 14], [14, 15], [15, 16],
+    [0, 17], [17, 18], [18, 19], [19, 20],
+]
+
 
 class DexYCBDataset():
 
@@ -54,7 +86,7 @@ class DexYCBDataset():
     self._setup = setup
     self._split = split
 
-    self._data_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
+    self._data_dir = os.path.join(os.path.dirname(__file__), "..", "data")
     self._calib_dir = os.path.join(self._data_dir, "calibration")
     self._model_dir = os.path.join(self._data_dir, "models")
 
@@ -193,3 +225,15 @@ class DexYCBDataset():
   @property
   def obj_file(self):
     return self._obj_file
+
+  @property
+  def ycb_classes(self):
+    return _YCB_CLASSES
+
+  @property
+  def mano_joints(self):
+    return _MANO_JOINTS
+
+  @property
+  def mano_joint_connect(self):
+    return _MANO_JOINT_CONNECT
