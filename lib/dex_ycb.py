@@ -79,6 +79,8 @@ _MANO_JOINT_CONNECT = [
     [0, 17], [17, 18], [18, 19], [19, 20],
 ]
 
+_EVAL_SUBSAMPLING_FACTOR = 4
+
 
 class DexYCBDataset():
 
@@ -212,6 +214,8 @@ class DexYCBDataset():
         'intrinsics': self._intrinsics[c],
         'ycb_ids': self._ycb_ids[s],
     }
+    if self._split == 'test':
+      sample['is_eval'] = f % _EVAL_SUBSAMPLING_FACTOR == 0
     return sample
 
   @property
