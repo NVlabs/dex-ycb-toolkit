@@ -1,3 +1,5 @@
 *.pyc
 data
 eval/anno_*.json
+eval/bop
+eval/bop-res_*-test*

@@ -79,7 +79,7 @@ _MANO_JOINT_CONNECT = [
     [0, 17], [17, 18], [18, 19], [19, 20],
 ]
 
-_EVAL_SUBSAMPLING_FACTOR = 4
+_BOP_EVAL_SUBSAMPLING_FACTOR = 4
 
 
 class DexYCBDataset():
@@ -215,7 +215,7 @@ class DexYCBDataset():
         'ycb_ids': self._ycb_ids[s],
     }
     if self._split == 'test':
-      sample['is_eval'] = f % _EVAL_SUBSAMPLING_FACTOR == 0
+      sample['is_bop_target'] = f % _BOP_EVAL_SUBSAMPLING_FACTOR == 0
     return sample
 
   @property
@@ -241,3 +241,9 @@ class DexYCBDataset():
   @property
   def mano_joint_connect(self):
     return _MANO_JOINT_CONNECT
+
+  def get_bop_id_from_idx(self, idx):
+    s, c, f = map(lambda x: x.item(), self._mapping[idx])
+    scene_id = s * len(self._serials) + c
+    im_id = f
+    return scene_id, im_id
