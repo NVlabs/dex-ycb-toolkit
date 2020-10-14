@@ -1,0 +1,4 @@
+[submodule "bop_toolkit"]
+	path = bop_toolkit
+	url = ssh://git@gitlab-master.nvidia.com:12051/ychao/bop_toolkit.git
+	branch = dex-ycb-toolkit
