@@ -23,7 +23,6 @@ _SERIALS = [
 ]
 
 _YCB_CLASSES = [
-    '__background__',
     '002_master_chef_can',
     '003_cracker_box',
     '004_sugar_box',
@@ -98,10 +97,10 @@ class DexYCBDataset():
     self._h = 480
     self._w = 640
 
-    self._obj_file = [
-        os.path.join(self._model_dir, x, "textured_simple.obj")
-        for x in _YCB_CLASSES
-    ]
+    self._obj_file = {
+        i + 1: os.path.join(self._model_dir, x, "textured_simple.obj")
+        for i, x in enumerate(_YCB_CLASSES)
+    }
 
     # Seen subjects, camera views, grasped objects.
     if self._setup == 's0':
