@@ -46,7 +46,7 @@ class BOPEvaluator():
     self._eval_dir = os.path.join(os.path.dirname(__file__), "..", "eval")
     self._bop_dir = os.path.join(self._eval_dir, "bop")
 
-  def convert_pose_to_bop(self, est):
+  def _convert_pose_to_bop(self, est):
     est['t'] *= 1000
     est['t'] -= np.dot(
         est['R'],
@@ -56,7 +56,7 @@ class BOPEvaluator():
 
   def evaluate(self, res_file, renderer_type='python'):
     ests = inout.load_bop_results(res_file)
-    ests = [self.convert_pose_to_bop(est) for est in ests]
+    ests = [self._convert_pose_to_bop(est) for est in ests]
     bop_res_file = os.path.join(
         self._eval_dir, "bop-res_{}-{}.csv".format(*self._name.split('_')))
     inout.save_bop_results(bop_res_file, ests)

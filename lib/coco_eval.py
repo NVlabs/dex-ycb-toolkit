@@ -27,9 +27,9 @@ class COCOEvaluator():
       print('Found COCO annnotation file')
     else:
       print('Cannot find COCO annnotation file')
-      self.generate_anno_file()
+      self._generate_anno_file()
 
-  def generate_anno_file(self):
+  def _generate_anno_file(self):
     print('Generating COCO annotation file')
     s = time.time()
 
