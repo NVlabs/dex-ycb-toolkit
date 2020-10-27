@@ -224,6 +224,10 @@ class DexYCBDataset():
     return sample
 
   @property
+  def data_dir(self):
+    return self._data_dir
+
+  @property
   def h(self):
     return self._h
 

@@ -44,7 +44,7 @@ class BOPEvaluator():
     self._dataset = get_dataset(self._name)
 
     self._eval_dir = os.path.join(os.path.dirname(__file__), "..", "eval")
-    self._bop_dir = os.path.join(self._eval_dir, "bop")
+    self._bop_dir = os.path.join(self._dataset.data_dir, "bop")
 
   def _convert_pose_to_bop(self, est):
     est['t'] *= 1000
