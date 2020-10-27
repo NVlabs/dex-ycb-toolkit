@@ -26,29 +26,29 @@ _SERIALS = [
     '932122062010',
 ]
 
-_YCB_CLASSES = [
-    '002_master_chef_can',
-    '003_cracker_box',
-    '004_sugar_box',
-    '005_tomato_soup_can',
-    '006_mustard_bottle',
-    '007_tuna_fish_can',
-    '008_pudding_box',
-    '009_gelatin_box',
-    '010_potted_meat_can',
-    '011_banana',
-    '019_pitcher_base',
-    '021_bleach_cleanser',
-    '024_bowl',
-    '025_mug',
-    '035_power_drill',
-    '036_wood_block',
-    '037_scissors',
-    '040_large_marker',
-    '051_large_clamp',
-    '052_extra_large_clamp',
-    '061_foam_brick',
-]
+_YCB_CLASSES = {
+     1: '002_master_chef_can',
+     2: '003_cracker_box',
+     3: '004_sugar_box',
+     4: '005_tomato_soup_can',
+     5: '006_mustard_bottle',
+     6: '007_tuna_fish_can',
+     7: '008_pudding_box',
+     8: '009_gelatin_box',
+     9: '010_potted_meat_can',
+    10: '011_banana',
+    11: '019_pitcher_base',
+    12: '021_bleach_cleanser',
+    13: '024_bowl',
+    14: '025_mug',
+    15: '035_power_drill',
+    16: '036_wood_block',
+    17: '037_scissors',
+    18: '040_large_marker',
+    19: '051_large_clamp',
+    20: '052_extra_large_clamp',
+    21: '061_foam_brick',
+}
 
 _MANO_JOINTS = [
     'wrist',
@@ -102,8 +102,8 @@ class DexYCBDataset():
     self._w = 640
 
     self._obj_file = {
-        i + 1: os.path.join(self._model_dir, x, "textured_simple.obj")
-        for i, x in enumerate(_YCB_CLASSES)
+        k: os.path.join(self._model_dir, v, "textured_simple.obj")
+        for k, v in _YCB_CLASSES.items()
     }
 
     # Seen subjects, camera views, grasped objects.
