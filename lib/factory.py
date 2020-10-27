@@ -4,8 +4,6 @@ _sets = {}
 
 for setup in ('s0', 's1', 's2', 's3'):
   for split in ('train', 'val', 'test'):
-    if setup == 's1' and split == 'test':
-      continue
     name = '{}_{}'.format(setup, split)
     _sets[name] = (lambda setup=setup, split=split: DexYCBDataset(setup, split))
 

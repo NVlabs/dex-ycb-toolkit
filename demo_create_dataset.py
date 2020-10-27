@@ -3,7 +3,7 @@ import json
 from lib.factory import get_dataset
 
 for setup in ('s0', 's1', 's2', 's3'):
-  for split in ('train', 'val'):
+  for split in ('train', 'val', 'test'):
     name = '{}_{}'.format(setup, split)
     print('dataset name: {}'.format(name))
 

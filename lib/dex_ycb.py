@@ -9,6 +9,10 @@ _SUBJECTS = [
     '20200903-ynarang',
     '20200908-yux',
     '20200918-ftozetoramos',
+    '20200928-ahanda',
+    '20201002-dieterf',
+    '20201015-ychao',
+    '20201022-lmanuelli',
 ]
 
 _SERIALS = [
@@ -105,60 +109,62 @@ class DexYCBDataset():
     # Seen subjects, camera views, grasped objects.
     if self._setup == 's0':
       if self._split == 'train':
-        subject_ind = [0, 1, 2, 3, 4, 5]
+        subject_ind = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         serial_ind = [0, 1, 2, 3, 4, 5, 6, 7]
         sequence_ind = [i for i in range(100) if i % 5 != 4]
       if self._split == 'val':
-        subject_ind = [5]
+        subject_ind = [0, 1]
         serial_ind = [0, 1, 2, 3, 4, 5, 6, 7]
         sequence_ind = [i for i in range(100) if i % 5 == 4]
       if self._split == 'test':
-        subject_ind = [0, 1, 2, 3, 4]
+        subject_ind = [2, 3, 4, 5, 6, 7, 8, 9]
         serial_ind = [0, 1, 2, 3, 4, 5, 6, 7]
         sequence_ind = [i for i in range(100) if i % 5 == 4]
 
     # Unseen subjects.
     if self._setup == 's1':
       if self._split == 'train':
-        subject_ind = [0, 1, 2, 3, 4]
+        subject_ind = [0, 1, 2, 3, 4, 5, 9]
         serial_ind = [0, 1, 2, 3, 4, 5, 6, 7]
         sequence_ind = list(range(100))
       if self._split == 'val':
-        subject_ind = [5]
+        subject_ind = [6]
         serial_ind = [0, 1, 2, 3, 4, 5, 6, 7]
         sequence_ind = list(range(100))
       if self._split == 'test':
-        raise NotImplementedError
+        subject_ind = [7, 8]
+        serial_ind = [0, 1, 2, 3, 4, 5, 6, 7]
+        sequence_ind = list(range(100))
 
     # Unseen camera views.
     if self._setup == 's2':
       if self._split == 'train':
-        subject_ind = [0, 1, 2, 3, 4, 5]
+        subject_ind = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         serial_ind = [0, 1, 2, 3, 4, 5]
         sequence_ind = list(range(100))
       if self._split == 'val':
-        subject_ind = [0, 1, 2, 3, 4, 5]
+        subject_ind = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         serial_ind = [6]
         sequence_ind = list(range(100))
       if self._split == 'test':
-        subject_ind = [0, 1, 2, 3, 4, 5]
+        subject_ind = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         serial_ind = [7]
         sequence_ind = list(range(100))
 
     # Unseen grasped objects.
     if self._setup == 's3':
       if self._split == 'train':
-        subject_ind = [0, 1, 2, 3, 4, 5]
+        subject_ind = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         serial_ind = [0, 1, 2, 3, 4, 5, 6, 7]
         sequence_ind = [
             i for i in range(100) if i // 5 not in (3, 7, 11, 15, 19)
         ]
       if self._split == 'val':
-        subject_ind = [0, 1, 2, 3, 4, 5]
+        subject_ind = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         serial_ind = [0, 1, 2, 3, 4, 5, 6, 7]
         sequence_ind = [i for i in range(100) if i // 5 in (3, 19)]
       if self._split == 'test':
-        subject_ind = [0, 1, 2, 3, 4, 5]
+        subject_ind = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         serial_ind = [0, 1, 2, 3, 4, 5, 6, 7]
         sequence_ind = [i for i in range(100) if i // 5 in (7, 11, 15)]
 
@@ -214,7 +220,7 @@ class DexYCBDataset():
         'ycb_ids': self._ycb_ids[s],
     }
     if self._split == 'test':
-      sample['is_bop_target'] = f % _BOP_EVAL_SUBSAMPLING_FACTOR == 0
+      sample['is_bop_target'] = (f % _BOP_EVAL_SUBSAMPLING_FACTOR == 0).item()
     return sample
 
   @property
