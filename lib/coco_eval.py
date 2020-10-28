@@ -23,7 +23,7 @@ class COCOEvaluator():
 
     self._dataset = get_dataset(self._name)
 
-    self._class_names = self._dataset.ycb_classes + ['hand']
+    self._class_names = {**self._dataset.ycb_classes, 22: 'hand'}
 
     self._anno_file = os.path.join(os.path.dirname(__file__), "..", "eval",
                                    "anno_coco_{}.json".format(self._name))
@@ -95,7 +95,7 @@ class COCOEvaluator():
 
     categories = []
 
-    for i, x in enumerate(self._class_names):
+    for i, x in self._class_names.items():
       if x == 'hand':
         supercategory = 'mano'
         keypoints = self._dataset.mano_joints
@@ -106,7 +106,7 @@ class COCOEvaluator():
         keypoints = []
         skeleton = []
       cat = {
-          'id': i + 1,
+          'id': i,
           'name': x,
           'supercategory': supercategory,
           'keypoints': keypoints,
@@ -160,7 +160,7 @@ class COCOEvaluator():
     assert len(self._class_names) == precisions.shape[2]
 
     results_per_category = []
-    for idx, name in enumerate(self._class_names):
+    for idx, (_, name) in enumerate(self._class_names.items()):
       precision = precisions[:, :, idx, 0, -1]
       precision = precision[precision > -1]
       ap = np.mean(precision) if precision.size else float('nan')
