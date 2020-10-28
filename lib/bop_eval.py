@@ -2,13 +2,20 @@ import os
 import sys
 import numpy as np
 import subprocess
+import itertools
+
+from collections import defaultdict
+from tabulate import tabulate
 
 from lib.factory import get_dataset
 
 bop_toolkit_root = os.path.join(os.path.dirname(__file__), "..", "bop_toolkit")
 sys.path.append(bop_toolkit_root)
 
+from bop_toolkit_lib import dataset_params
 from bop_toolkit_lib import inout
+from bop_toolkit_lib import misc
+from bop_toolkit_lib import score
 
 # See dataset_info.md in http://ptak.felk.cvut.cz/6DB/public/bop_datasets/ycbv_base.zip.
 _BOP_TRANSLATIONS = {
@@ -43,8 +50,49 @@ class BOPEvaluator():
 
     self._dataset = get_dataset(self._name)
 
+    setup = self._name.split('_')[0]
+    split = self._name.split('_')[1]
+    self._result_name = 'bop-res_{}-{}'.format(setup, split)
+
     self._eval_dir = os.path.join(os.path.dirname(__file__), "..", "eval")
     self._bop_dir = os.path.join(self._dataset.data_dir, "bop")
+
+    self._p = {
+        'errors': [
+            {
+                'n_top': -1,
+                'type': 'vsd',
+                'vsd_delta': 15,
+                'vsd_taus': list(np.arange(0.05, 0.51, 0.05)),
+                'correct_th': [[th] for th in np.arange(0.05, 0.51, 0.05)]
+            },
+            {
+                'n_top': -1,
+                'type': 'mssd',
+                'correct_th': [[th] for th in np.arange(0.05, 0.51, 0.05)]
+            },
+            {
+                'n_top': -1,
+                'type': 'mspd',
+                'correct_th': [[th] for th in np.arange(5, 51, 5)]
+            },
+        ],
+        'visib_gt_min': -1,
+    }
+
+    dp_split = dataset_params.get_split_params(self._bop_dir, setup, split)
+    dp_model = dataset_params.get_model_params(self._bop_dir,
+                                               setup,
+                                               model_type='eval')
+    self._scene_ids = dp_split['scene_ids']
+    self._obj_ids = dp_model['obj_ids']
+
+    self._grasp_id = defaultdict(lambda: {})
+    for i in range(len(self._dataset)):
+      sample = self._dataset[i]
+      scene_id, im_id = self._dataset.get_bop_id_from_idx(i)
+      obj_id = sample['ycb_ids'][sample['ycb_grasp_ind']]
+      self._grasp_id[scene_id][im_id] = obj_id
 
   def _convert_pose_to_bop(self, est):
     est['t'] *= 1000
@@ -54,11 +102,114 @@ class BOPEvaluator():
             3, 1)
     return est
 
+  def _derive_bop_results(self, grasp_only=False):
+    if grasp_only:
+      set_str = 'grasp only'
+    else:
+      set_str = 'all'
+
+    print('Deriving results on {}'.format(set_str))
+
+    average_recalls = {}
+    average_recalls_obj = defaultdict(lambda: {})
+
+    for error in self._p['errors']:
+
+      error_dir_paths = {}
+      if error['type'] == 'vsd':
+        for vsd_tau in error['vsd_taus']:
+          error_sign = misc.get_error_signature(error['type'],
+                                                error['n_top'],
+                                                vsd_delta=error['vsd_delta'],
+                                                vsd_tau=vsd_tau)
+          error_dir_paths[error_sign] = os.path.join(self._result_name,
+                                                     error_sign)
+      else:
+        error_sign = misc.get_error_signature(error['type'], error['n_top'])
+        error_dir_paths[error_sign] = os.path.join(self._result_name,
+                                                   error_sign)
+
+      recalls = []
+      recalls_obj = defaultdict(lambda: [])
+
+      for error_sign, error_dir_path in error_dir_paths.items():
+        for correct_th in error['correct_th']:
+
+          score_sign = misc.get_score_signature(correct_th,
+                                                self._p['visib_gt_min'])
+          matches_filename = "matches_{}.json".format(score_sign)
+          matches_path = os.path.join(self._eval_dir, error_dir_path,
+                                      matches_filename)
+
+          matches = inout.load_json(matches_path)
+
+          if grasp_only:
+            matches = [
+                m for m in matches
+                if m['obj_id'] == self._grasp_id[m['scene_id']][m['im_id']]
+            ]
+
+          scores = score.calc_localization_scores(self._scene_ids,
+                                                  self._obj_ids,
+                                                  matches,
+                                                  error['n_top'],
+                                                  do_print=False)
+
+          recalls.append(scores['recall'])
+          for i, r in scores['obj_recalls'].items():
+            recalls_obj[i].append(r)
+
+      average_recalls[error['type']] = np.mean(recalls)
+      for i, r in recalls_obj.items():
+        average_recalls_obj[i][error['type']] = np.mean(r)
+
+    results = {i: r * 100 for i, r in average_recalls.items()}
+    results['mean'] = np.mean(
+        [results['vsd'], results['mssd'], results['mspd']])
+
+    keys, values = tuple(zip(*results.items()))
+    table = tabulate(
+        [values],
+        headers=keys,
+        tablefmt='pipe',
+        floatfmt='.3f',
+        stralign='center',
+        numalign='center',
+    )
+    print('Evaluation results ({}): \n'.format(set_str) + table)
+
+    results_per_object = {}
+    for i, v in average_recalls_obj.items():
+      results_per_object[self._dataset.ycb_classes[i]] = {
+          k: r * 100 for k, r in v.items()
+      }
+      results_per_object[self._dataset.ycb_classes[i]]['mean'] = np.mean(
+          [v['vsd'], v['mssd'], v['mspd']])
+
+    n_cols = 5
+    results_tuple = [(k, v['vsd'], v['mssd'], v['mspd'], v['mean'])
+                     for k, v in results_per_object.items()]
+    results_flatten = list(itertools.chain(*results_tuple))
+    results_2d = itertools.zip_longest(
+        *[results_flatten[i::n_cols] for i in range(n_cols)])
+    table = tabulate(
+        results_2d,
+        tablefmt='pipe',
+        floatfmt='.3f',
+        headers=['object', 'vsd', 'mssd', 'mspd', 'mean'] * (n_cols // 5),
+        numalign='left',
+    )
+    print('Per-object scores ({}): \n'.format(set_str) + table)
+
+    results['per_obj'] = results_per_object
+
+    return results
+
   def evaluate(self, res_file, renderer_type='python'):
     ests = inout.load_bop_results(res_file)
     ests = [self._convert_pose_to_bop(est) for est in ests]
-    bop_res_file = os.path.join(
-        self._eval_dir, "bop-res_{}-{}.csv".format(*self._name.split('_')))
+    bop_res_file = os.path.join(self._eval_dir,
+                                "{}.csv".format(self._result_name))
     inout.save_bop_results(bop_res_file, ests)
 
     eval_cmd = [
@@ -76,3 +227,9 @@ class BOPEvaluator():
 
     if subprocess.run(eval_cmd, cwd=cwd, env=env).returncode != 0:
       raise RuntimeError('BOP evaluation failed.')
+
+    results = {}
+    results['all'] = self._derive_bop_results()
+    results['grasp_only'] = self._derive_bop_results(grasp_only=True)
+
+    return results

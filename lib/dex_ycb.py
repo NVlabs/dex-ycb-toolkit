@@ -183,6 +183,7 @@ class DexYCBDataset():
     self._sequences = []
     self._mapping = []
     self._ycb_ids = []
+    self._ycb_grasp_ind = []
     offset = 0
     for n in self._subjects:
       seq = sorted(os.listdir(os.path.join(self._data_dir, n)))
@@ -203,6 +204,7 @@ class DexYCBDataset():
         m = np.vstack((s, c, f)).T
         self._mapping.append(m)
         self._ycb_ids.append(meta['ycb_ids'])
+        self._ycb_grasp_ind.append(meta['ycb_grasp_ind'])
       offset += len(seq)
     self._mapping = np.vstack(self._mapping)
 
@@ -218,6 +220,7 @@ class DexYCBDataset():
         'label_file': os.path.join(d, self._label_format.format(f)),
         'intrinsics': self._intrinsics[c],
         'ycb_ids': self._ycb_ids[s],
+        'ycb_grasp_ind': self._ycb_grasp_ind[s],
     }
     if self._split == 'test':
       sample['is_bop_target'] = (f % _BOP_EVAL_SUBSAMPLING_FACTOR == 0).item()
