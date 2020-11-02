@@ -195,7 +195,7 @@ class BOPEvaluator():
         tablefmt='pipe',
         floatfmt='.3f',
         headers=['object', 'vsd', 'mssd', 'mspd', 'mean'] * (n_cols // 5),
-        numalign='left',
+        numalign='right',
     )
     print('Per-object scores ({}): \n'.format(set_str) + table)
 
