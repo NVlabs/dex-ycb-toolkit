@@ -180,11 +180,9 @@ class BOPEvaluator():
 
     results_per_object = {}
     for i, v in average_recalls_obj.items():
-      results_per_object[self._dataset.ycb_classes[i]] = {
-          k: r * 100 for k, r in v.items()
-      }
-      results_per_object[self._dataset.ycb_classes[i]]['mean'] = np.mean(
-          [v['vsd'], v['mssd'], v['mspd']])
+      res = {k: r * 100 for k, r in v.items()}
+      res['mean'] = np.mean([res['vsd'], res['mssd'], res['mspd']])
+      results_per_object[self._dataset.ycb_classes[i]] = res
 
     n_cols = 5
     results_tuple = [(k, v['vsd'], v['mssd'], v['mspd'], v['mean'])
