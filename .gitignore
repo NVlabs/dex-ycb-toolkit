@@ -1,5 +1,4 @@
 *.pyc
 data
 eval/anno_coco_*.json
-eval/bop
-eval/bop-res_*-test*
+eval/bop-*_*-test*

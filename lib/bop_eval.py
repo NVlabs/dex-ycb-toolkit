@@ -50,9 +50,8 @@ class BOPEvaluator():
 
     self._dataset = get_dataset(self._name)
 
-    setup = self._name.split('_')[0]
-    split = self._name.split('_')[1]
-    self._result_name = 'bop-res_{}-{}'.format(setup, split)
+    self._setup = self._name.split('_')[0]
+    self._split = self._name.split('_')[1]
 
     self._eval_dir = os.path.join(os.path.dirname(__file__), "..", "eval")
     self._bop_dir = os.path.join(self._dataset.data_dir, "bop")
@@ -80,9 +79,10 @@ class BOPEvaluator():
         'visib_gt_min': -1,
     }
 
-    dp_split = dataset_params.get_split_params(self._bop_dir, setup, split)
+    dp_split = dataset_params.get_split_params(self._bop_dir, self._setup,
+                                               self._split)
     dp_model = dataset_params.get_model_params(self._bop_dir,
-                                               setup,
+                                               self._setup,
                                                model_type='eval')
     self._scene_ids = dp_split['scene_ids']
     self._obj_ids = dp_model['obj_ids']
@@ -102,7 +102,7 @@ class BOPEvaluator():
             3, 1)
     return est
 
-  def _derive_bop_results(self, grasp_only=False):
+  def _derive_bop_results(self, result_name, grasp_only=False):
     if grasp_only:
       set_str = 'grasp only'
     else:
@@ -122,12 +122,10 @@ class BOPEvaluator():
                                                 error['n_top'],
                                                 vsd_delta=error['vsd_delta'],
                                                 vsd_tau=vsd_tau)
-          error_dir_paths[error_sign] = os.path.join(self._result_name,
-                                                     error_sign)
+          error_dir_paths[error_sign] = os.path.join(result_name, error_sign)
       else:
         error_sign = misc.get_error_signature(error['type'], error['n_top'])
-        error_dir_paths[error_sign] = os.path.join(self._result_name,
-                                                   error_sign)
+        error_dir_paths[error_sign] = os.path.join(result_name, error_sign)
 
       recalls = []
       recalls_obj = defaultdict(lambda: [])
@@ -206,8 +204,10 @@ class BOPEvaluator():
   def evaluate(self, res_file, renderer_type='python'):
     ests = inout.load_bop_results(res_file)
     ests = [self._convert_pose_to_bop(est) for est in ests]
-    bop_res_file = os.path.join(self._eval_dir,
-                                "{}.csv".format(self._result_name))
+    res_name = os.path.splitext(os.path.basename(res_file))[0]
+    bop_res_name = 'bop-{}_{}-{}'.format(res_name.replace('_', '-'),
+                                         self._setup, self._split)
+    bop_res_file = os.path.join(self._eval_dir, "{}.csv".format(bop_res_name))
     inout.save_bop_results(bop_res_file, ests)
 
     eval_cmd = [
@@ -227,7 +227,8 @@ class BOPEvaluator():
       raise RuntimeError('BOP evaluation failed.')
 
     results = {}
-    results['all'] = self._derive_bop_results()
-    results['grasp_only'] = self._derive_bop_results(grasp_only=True)
+    results['all'] = self._derive_bop_results(bop_res_name)
+    results['grasp_only'] = self._derive_bop_results(bop_res_name,
+                                                     grasp_only=True)
 
     return results
