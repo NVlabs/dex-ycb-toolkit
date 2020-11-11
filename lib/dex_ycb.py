@@ -184,6 +184,8 @@ class DexYCBDataset():
     self._mapping = []
     self._ycb_ids = []
     self._ycb_grasp_ind = []
+    self._mano_side = []
+    self._mano_betas = []
     offset = 0
     for n in self._subjects:
       seq = sorted(os.listdir(os.path.join(self._data_dir, n)))
@@ -205,6 +207,13 @@ class DexYCBDataset():
         self._mapping.append(m)
         self._ycb_ids.append(meta['ycb_ids'])
         self._ycb_grasp_ind.append(meta['ycb_grasp_ind'])
+        self._mano_side.append(meta['mano_sides'][0])
+        mano_calib_file = os.path.join(self._data_dir, "calibration",
+                                       "mano_{}".format(meta['mano_calib'][0]),
+                                       "mano.yml")
+        with open(mano_calib_file, 'r') as f:
+          mano_calib = yaml.load(f, Loader=yaml.FullLoader)
+        self._mano_betas.append(mano_calib['betas'])
       offset += len(seq)
     self._mapping = np.vstack(self._mapping)
 
@@ -221,6 +230,8 @@ class DexYCBDataset():
         'intrinsics': self._intrinsics[c],
         'ycb_ids': self._ycb_ids[s],
         'ycb_grasp_ind': self._ycb_grasp_ind[s],
+        'mano_side': self._mano_side[s],
+        'mano_betas': self._mano_betas[s],
     }
     if self._split == 'test':
       sample['is_bop_target'] = (f % _BOP_EVAL_SUBSAMPLING_FACTOR == 0).item()
