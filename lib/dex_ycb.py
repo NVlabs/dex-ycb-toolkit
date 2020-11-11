@@ -226,8 +226,8 @@ class DexYCBDataset():
       sample['is_bop_target'] = (f % _BOP_EVAL_SUBSAMPLING_FACTOR == 0).item()
       id_next = idx + _BOP_EVAL_SUBSAMPLING_FACTOR
       is_last = (id_next >= len(self._mapping) or
-                 np.any(self._mapping[id_next][:2] != [s, c]))
-      sample['is_grasp_target'] = sample['is_bop_target'] and is_last.item()
+                 (np.any(self._mapping[id_next][:2] != [s, c])).item())
+      sample['is_grasp_target'] = sample['is_bop_target'] and is_last
     return sample
 
   @property
