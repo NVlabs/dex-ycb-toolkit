@@ -7,7 +7,7 @@ import itertools
 from collections import defaultdict
 from tabulate import tabulate
 
-from lib.factory import get_dataset
+from dex_ycb_toolkit.factory import get_dataset
 
 bop_toolkit_root = os.path.join(os.path.dirname(__file__), "..", "bop_toolkit")
 sys.path.append(bop_toolkit_root)

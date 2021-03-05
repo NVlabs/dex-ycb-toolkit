@@ -91,7 +91,8 @@ class DexYCBDataset():
     self._setup = setup
     self._split = split
 
-    self._data_dir = os.path.join(os.path.dirname(__file__), "..", "data")
+    assert 'DEX_YCB_DIR' in os.environ, "environment variable 'DEX_YCB_DIR' is not set"
+    self._data_dir = os.environ['DEX_YCB_DIR']
     self._calib_dir = os.path.join(self._data_dir, "calibration")
     self._model_dir = os.path.join(self._data_dir, "models")
 

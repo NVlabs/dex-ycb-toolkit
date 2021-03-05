@@ -1,6 +1,6 @@
 import os
 
-from lib.coco_eval import COCOEvaluator
+from dex_ycb_toolkit.coco_eval import COCOEvaluator
 
 name = 's0_val'
 coco_eval = COCOEvaluator(name)

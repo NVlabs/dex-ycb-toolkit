@@ -1,6 +1,6 @@
 import json
 
-from lib.factory import get_dataset
+from dex_ycb_toolkit.factory import get_dataset
 
 for setup in ('s0', 's1', 's2', 's3'):
   for split in ('train', 'val', 'test'):

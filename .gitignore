@@ -1,4 +1,6 @@
 *.pyc
-data
+
+dex_ycb_toolkit.egg-info
+
 eval/anno_coco_*.json
 eval/bop-*_*-test*

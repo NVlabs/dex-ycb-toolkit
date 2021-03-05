@@ -10,7 +10,7 @@ from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 from tabulate import tabulate
 
-from lib.factory import get_dataset
+from dex_ycb_toolkit.factory import get_dataset
 
 # TODO(ywchao): tune OKS following https://cocodataset.org/#keypoints-eval.
 _KPT_OKS_SIGMAS = [0.05] * 21

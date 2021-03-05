@@ -5,7 +5,7 @@ import trimesh
 import cv2
 import matplotlib.pyplot as plt
 
-from lib.factory import get_dataset
+from dex_ycb_toolkit.factory import get_dataset
 
 name = 's0_train'
 dataset = get_dataset(name)

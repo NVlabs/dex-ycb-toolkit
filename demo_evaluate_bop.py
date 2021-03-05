@@ -1,6 +1,6 @@
 import os
 
-from lib.bop_eval import BOPEvaluator
+from dex_ycb_toolkit.bop_eval import BOPEvaluator
 
 name = 's0_test'
 bop_eval = BOPEvaluator(name)
