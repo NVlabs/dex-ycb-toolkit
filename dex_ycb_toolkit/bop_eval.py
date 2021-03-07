@@ -53,7 +53,7 @@ class BOPEvaluator():
     self._setup = self._name.split('_')[0]
     self._split = self._name.split('_')[1]
 
-    self._eval_dir = os.path.join(os.path.dirname(__file__), "..", "eval")
+    self._res_dir = os.path.join(os.path.dirname(__file__), "..", "results")
     self._bop_dir = os.path.join(self._dataset.data_dir, "bop")
 
     self._p = {
@@ -136,7 +136,7 @@ class BOPEvaluator():
           score_sign = misc.get_score_signature(correct_th,
                                                 self._p['visib_gt_min'])
           matches_filename = "matches_{}.json".format(score_sign)
-          matches_path = os.path.join(self._eval_dir, error_dir_path,
+          matches_path = os.path.join(self._res_dir, error_dir_path,
                                       matches_filename)
 
           matches = inout.load_json(matches_path)
@@ -207,7 +207,7 @@ class BOPEvaluator():
     res_name = os.path.splitext(os.path.basename(res_file))[0]
     bop_res_name = 'bop-{}_{}-{}'.format(res_name.replace('_', '-'),
                                          self._setup, self._split)
-    bop_res_file = os.path.join(self._eval_dir, "{}.csv".format(bop_res_name))
+    bop_res_file = os.path.join(self._res_dir, "{}.csv".format(bop_res_name))
     inout.save_bop_results(bop_res_file, ests)
 
     eval_cmd = [
@@ -215,8 +215,8 @@ class BOPEvaluator():
         os.path.join('scripts', 'eval_bop19.py'),
         '--renderer_type={}'.format(renderer_type),
         '--result_filenames={}'.format(bop_res_file),
-        '--results_path={}'.format(self._eval_dir),
-        '--eval_path={}'.format(self._eval_dir),
+        '--results_path={}'.format(self._res_dir),
+        '--eval_path={}'.format(self._res_dir),
     ]
     cwd = "bop_toolkit"
     env = os.environ.copy()

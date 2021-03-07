@@ -25,7 +25,7 @@ class COCOEvaluator():
 
     self._class_names = {**self._dataset.ycb_classes, 22: 'hand'}
 
-    self._anno_file = os.path.join(os.path.dirname(__file__), "..", "eval",
+    self._anno_file = os.path.join(os.path.dirname(__file__), "..", "results",
                                    "anno_coco_{}.json".format(self._name))
     if os.path.isfile(self._anno_file):
       print('Found COCO annnotation file.')
