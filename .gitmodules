@@ -2,3 +2,7 @@
 	path = bop_toolkit
 	url = ssh://git@gitlab-master.nvidia.com:12051/ychao/bop_toolkit.git
 	branch = dex-ycb-toolkit
+[submodule "freihand"]
+	path = freihand
+	url = ssh://git@gitlab-master.nvidia.com:12051/ychao/freihand.git
+	branch = dex-ycb-toolkit
