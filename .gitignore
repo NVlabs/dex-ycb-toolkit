@@ -3,4 +3,5 @@
 dex_ycb_toolkit.egg-info
 
 results/anno_coco_*.json
+results/anno_hpe_*.pkl
 results/bop-*_*-test*
