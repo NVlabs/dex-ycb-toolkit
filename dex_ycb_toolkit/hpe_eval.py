@@ -126,7 +126,7 @@ class HPEEvaluator():
     tabular_data = [['absolute', mean_ab, auc_ab],
                     ['root-relative', mean_rr, auc_rr],
                     ['procrustes', mean_pa, auc_pa]]
-    metrics = ['alignment', 'MPJPE', 'AUC']
+    metrics = ['alignment', 'MPJPE (mm)', 'AUC (%)']
     table = tabulate(tabular_data,
                      headers=metrics,
                      tablefmt='pipe',
@@ -134,4 +134,21 @@ class HPEEvaluator():
                      numalign='right')
     print('Results: \n' + table)
 
+    results = {
+        'absolute': {
+            'mpjpe': mean_ab,
+            'auc': auc_ab
+        },
+        'root-relative': {
+            'mpjpe': mean_rr,
+            'auc': auc_rr
+        },
+        'procrustes': {
+            'mpjpe': mean_pa,
+            'auc': auc_pa
+        },
+    }
+
     print('Evaluation complete.')
+
+    return results
