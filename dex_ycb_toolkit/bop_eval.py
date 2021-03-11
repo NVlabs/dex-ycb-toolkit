@@ -102,13 +102,13 @@ class BOPEvaluator():
             3, 1)
     return est
 
-  def _derive_bop_results(self, result_name, grasp_only=False):
+  def _derive_bop_results(self, result_name, grasp_only):
     if grasp_only:
       set_str = 'grasp only'
     else:
       set_str = 'all'
 
-    print('Deriving results on {}'.format(set_str))
+    print('Deriving results for *{}*'.format(set_str))
 
     average_recalls = {}
     average_recalls_obj = defaultdict(lambda: {})
@@ -174,7 +174,7 @@ class BOPEvaluator():
         stralign='center',
         numalign='center',
     )
-    print('Evaluation results ({}): \n'.format(set_str) + table)
+    print('Evaluation results for *{}*: \n'.format(set_str) + table)
 
     results_per_object = {}
     for i, v in average_recalls_obj.items():
@@ -195,7 +195,7 @@ class BOPEvaluator():
         headers=['object', 'vsd', 'mssd', 'mspd', 'mean'] * (n_cols // 5),
         numalign='right',
     )
-    print('Per-object scores ({}): \n'.format(set_str) + table)
+    print('Per-object scores for *{}*: \n'.format(set_str) + table)
 
     results['per_obj'] = results_per_object
 
@@ -227,8 +227,9 @@ class BOPEvaluator():
       raise RuntimeError('BOP evaluation failed.')
 
     results = {}
-    results['all'] = self._derive_bop_results(bop_res_name)
-    results['grasp_only'] = self._derive_bop_results(bop_res_name,
-                                                     grasp_only=True)
+    results['all'] = self._derive_bop_results(bop_res_name, False)
+    results['grasp_only'] = self._derive_bop_results(bop_res_name, True)
+
+    print('Evaluation complete.')
 
     return results
