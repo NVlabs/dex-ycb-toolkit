@@ -1,21 +1,13 @@
 import numpy as np
 import pyrender
-import os
 import trimesh
 import cv2
 import matplotlib.pyplot as plt
 
 from dex_ycb_toolkit.factory import get_dataset
 
-name = 's0_train'
-dataset = get_dataset(name)
 
-idx = 0
-
-sample = dataset[idx]
-
-
-def create_scene(sample):
+def create_scene(sample, obj_file):
   # Create pyrender scene.
   scene = pyrender.Scene(bg_color=np.array([0.0, 0.0, 0.0, 0.0]),
                          ambient_light=np.array([1.0, 1.0, 1.0]))
@@ -31,8 +23,7 @@ def create_scene(sample):
   # Load YCB meshes.
   mesh_y = []
   for i in sample['ycb_ids']:
-    obj_file = dataset.obj_file[i]
-    mesh = trimesh.load(obj_file)
+    mesh = trimesh.load(obj_file[i])
     mesh = pyrender.Mesh.from_trimesh(mesh)
     mesh_y.append(mesh)
 
@@ -52,27 +43,39 @@ def create_scene(sample):
   return scene
 
 
-print('Visualizing pose using pyrender 3D viewer')
+def main():
+  name = 's0_train'
+  dataset = get_dataset(name)
 
-scene = create_scene(sample)
+  idx = 0
 
-pyrender.Viewer(scene, run_in_thread=True)
+  sample = dataset[idx]
 
-print('Visualizing pose in camera view using pyrender renderer')
+  print('Visualizing pose using pyrender 3D viewer')
 
-scene = create_scene(sample)
+  scene = create_scene(sample, dataset.obj_file)
 
-r = pyrender.OffscreenRenderer(viewport_width=dataset.w,
-                               viewport_height=dataset.h)
+  pyrender.Viewer(scene, run_in_thread=True)
 
-im_render, _ = r.render(scene)
+  print('Visualizing pose in camera view using pyrender renderer')
 
-im_real = cv2.imread(sample['color_file'])
-im_real = im_real[:, :, ::-1]
+  scene = create_scene(sample, dataset.obj_file)
 
-im = 0.33 * im_real.astype(np.float32) + 0.67 * im_render.astype(np.float32)
-im = im.astype(np.uint8)
+  r = pyrender.OffscreenRenderer(viewport_width=dataset.w,
+                                 viewport_height=dataset.h)
 
-plt.imshow(im)
-plt.tight_layout()
-plt.show()
+  im_render, _ = r.render(scene)
+
+  im_real = cv2.imread(sample['color_file'])
+  im_real = im_real[:, :, ::-1]
+
+  im = 0.33 * im_real.astype(np.float32) + 0.67 * im_render.astype(np.float32)
+  im = im.astype(np.uint8)
+
+  plt.imshow(im)
+  plt.tight_layout()
+  plt.show()
+
+
+if __name__ == '__main__':
+  main()
