@@ -107,17 +107,14 @@ class HPEEvaluator():
     eval_util_rr = EvalUtil()
     eval_util_pa = EvalUtil()
 
-    for i, joint_3d_pred in res.items():
-      assert i in joint_3d_gt, "missing image id in result file: {}".format(i)
-      vis = np.ones_like(joint_3d_gt[i][:, 0])
+    for i, kpt_gt in joint_3d_gt.items():
+      assert i in res, "missing image id in result file: {}".format(i)
+      vis = np.ones_like(kpt_gt[:, 0])
+      kpt_pred = res[i]
 
-      eval_util_ab.feed(joint_3d_gt[i], vis, joint_3d_pred)
-
-      eval_util_rr.feed(joint_3d_gt[i] - joint_3d_gt[i][0], vis,
-                        joint_3d_pred - joint_3d_pred[0])
-
-      joint_3d_pred_pa = align_w_scale(joint_3d_gt[i], joint_3d_pred)
-      eval_util_pa.feed(joint_3d_gt[i], vis, joint_3d_pred_pa)
+      eval_util_ab.feed(kpt_gt, vis, kpt_pred)
+      eval_util_rr.feed(kpt_gt - kpt_gt[0], vis, kpt_pred - kpt_pred[0])
+      eval_util_pa.feed(kpt_gt, vis, align_w_scale(kpt_gt, kpt_pred))
 
     mean_ab, _, auc_ab, _, _ = eval_util_ab.get_measures(
         _AUC_VAL_MIN, _AUC_VAL_MAX, _AUC_STEPS)
