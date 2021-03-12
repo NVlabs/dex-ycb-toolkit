@@ -8,6 +8,7 @@ from collections import defaultdict
 from tabulate import tabulate
 
 from dex_ycb_toolkit.factory import get_dataset
+from dex_ycb_toolkit.logging import get_logger
 
 bop_toolkit_root = os.path.join(os.path.dirname(__file__), "..", "bop_toolkit")
 sys.path.append(bop_toolkit_root)
@@ -102,13 +103,13 @@ class BOPEvaluator():
             3, 1)
     return est
 
-  def _derive_bop_results(self, result_name, grasp_only):
+  def _derive_bop_results(self, result_name, grasp_only, logger):
     if grasp_only:
       set_str = 'grasp only'
     else:
       set_str = 'all'
 
-    print('Deriving results for *{}*'.format(set_str))
+    logger.info('Deriving results for *{}*'.format(set_str))
 
     average_recalls = {}
     average_recalls_obj = defaultdict(lambda: {})
@@ -174,7 +175,7 @@ class BOPEvaluator():
         stralign='center',
         numalign='center',
     )
-    print('Evaluation results for *{}*: \n'.format(set_str) + table)
+    logger.info('Evaluation results for *{}*: \n'.format(set_str) + table)
 
     results_per_object = {}
     for i, v in average_recalls_obj.items():
@@ -195,13 +196,17 @@ class BOPEvaluator():
         headers=['object', 'vsd', 'mssd', 'mspd', 'mean'] * (n_cols // 5),
         numalign='right',
     )
-    print('Per-object scores for *{}*: \n'.format(set_str) + table)
+    logger.info('Per-object scores for *{}*: \n'.format(set_str) + table)
 
     results['per_obj'] = results_per_object
 
     return results
 
   def evaluate(self, res_file, renderer_type='python'):
+    log_file = os.path.splitext(res_file)[0] + '_bop_eval_{}.log'.format(
+        self._name)
+    logger = get_logger(log_file)
+
     ests = inout.load_bop_results(res_file)
     ests = [self._convert_pose_to_bop(est) for est in ests]
     res_name = os.path.splitext(os.path.basename(res_file))[0]
@@ -227,9 +232,9 @@ class BOPEvaluator():
       raise RuntimeError('BOP evaluation failed.')
 
     results = {}
-    results['all'] = self._derive_bop_results(bop_res_name, False)
-    results['grasp_only'] = self._derive_bop_results(bop_res_name, True)
+    results['all'] = self._derive_bop_results(bop_res_name, False, logger)
+    results['grasp_only'] = self._derive_bop_results(bop_res_name, True, logger)
 
-    print('Evaluation complete.')
+    logger.info('Evaluation complete.')
 
     return results

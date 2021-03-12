@@ -7,6 +7,7 @@ import pickle
 from tabulate import tabulate
 
 from dex_ycb_toolkit.factory import get_dataset
+from dex_ycb_toolkit.logging import get_logger
 
 freihand_root = os.path.join(os.path.dirname(__file__), "..", "freihand")
 sys.path.append(freihand_root)
@@ -97,9 +98,13 @@ class HPEEvaluator():
     return results
 
   def evaluate(self, res_file):
+    log_file = os.path.splitext(res_file)[0] + '_hpe_eval_{}.log'.format(
+        self._name)
+    logger = get_logger(log_file)
+
     res = self._load_results(res_file)
 
-    print('Running evaluation')
+    logger.info('Running evaluation')
 
     joint_3d_gt = self._anno['joint_3d']
 
@@ -132,7 +137,7 @@ class HPEEvaluator():
                      tablefmt='pipe',
                      floatfmt='.4f',
                      numalign='right')
-    print('Results: \n' + table)
+    logger.info('Results: \n' + table)
 
     results = {
         'absolute': {
@@ -149,6 +154,6 @@ class HPEEvaluator():
         },
     }
 
-    print('Evaluation complete.')
+    logger.info('Evaluation complete.')
 
     return results

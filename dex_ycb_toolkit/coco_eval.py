@@ -11,6 +11,7 @@ from pycocotools.cocoeval import COCOeval
 from tabulate import tabulate
 
 from dex_ycb_toolkit.factory import get_dataset
+from dex_ycb_toolkit.logging import get_logger
 
 # TODO(ywchao): tune OKS following https://cocodataset.org/#keypoints-eval.
 _KPT_OKS_SIGMAS = [0.05] * 21
@@ -131,7 +132,7 @@ class COCOEvaluator():
     print('time: {:7.2f}'.format(e - s))
 
   # https://github.com/facebookresearch/detectron2/blob/492cf9c7bae22d7d528f7f58169fcd52a450a0ca/detectron2/evaluation/coco_evaluation.py#L252
-  def _derive_coco_results(self, coco_eval, iou_type):
+  def _derive_coco_results(self, coco_eval, iou_type, logger):
     metrics = {
         'bbox': ['AP', 'AP50', 'AP75', 'APs', 'APm', 'APl'],
         'segm': ['AP', 'AP50', 'AP75', 'APs', 'APm', 'APl'],
@@ -152,9 +153,9 @@ class COCOEvaluator():
         stralign='center',
         numalign='center',
     )
-    print('Evaluation results for *{}*: \n'.format(iou_type) + table)
+    logger.info('Evaluation results for *{}*: \n'.format(iou_type) + table)
     if not np.isfinite(sum(results.values())):
-      print('Some metrics cannot be computed and is shown as NaN.')
+      logger.info('Some metrics cannot be computed and is shown as NaN.')
 
     precisions = coco_eval.eval["precision"]
     assert len(self._class_names) == precisions.shape[2]
@@ -177,12 +178,16 @@ class COCOEvaluator():
         headers=['category', 'AP'] * (n_cols // 2),
         numalign='left',
     )
-    print('Per-category *{}* AP: \n'.format(iou_type) + table)
+    logger.info('Per-category *{}* AP: \n'.format(iou_type) + table)
 
     results.update({'AP-' + name: ap for name, ap in results_per_category})
     return results
 
   def evaluate(self, res_file, tasks=('bbox', 'segm', 'keypoints')):
+    log_file = os.path.splitext(res_file)[0] + '_coco_eval_{}.log'.format(
+        self._name)
+    logger = get_logger(log_file)
+
     coco_gt = COCO(self._anno_file)
     coco_dt = coco_gt.loadRes(res_file)
 
@@ -207,8 +212,8 @@ class COCOEvaluator():
       coco_eval.accumulate()
       coco_eval.summarize()
 
-      results[task] = self._derive_coco_results(coco_eval, task)
+      results[task] = self._derive_coco_results(coco_eval, task, logger)
 
-    print('Evaluation complete.')
+    logger.info('Evaluation complete.')
 
     return results
