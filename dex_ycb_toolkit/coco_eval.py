@@ -152,7 +152,7 @@ class COCOEvaluator():
         stralign='center',
         numalign='center',
     )
-    print('Evaluation results for {}: \n'.format(iou_type) + table)
+    print('Evaluation results for *{}*: \n'.format(iou_type) + table)
     if not np.isfinite(sum(results.values())):
       print('Some metrics cannot be computed and is shown as NaN.')
 
@@ -177,7 +177,7 @@ class COCOEvaluator():
         headers=['category', 'AP'] * (n_cols // 2),
         numalign='left',
     )
-    print('Per-category {} AP: \n'.format(iou_type) + table)
+    print('Per-category *{}* AP: \n'.format(iou_type) + table)
 
     results.update({'AP-' + name: ap for name, ap in results_per_category})
     return results
@@ -208,5 +208,7 @@ class COCOEvaluator():
       coco_eval.summarize()
 
       results[task] = self._derive_coco_results(coco_eval, task)
+
+    print('Evaluation complete.')
 
     return results
