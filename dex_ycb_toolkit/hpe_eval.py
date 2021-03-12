@@ -13,7 +13,7 @@ freihand_root = os.path.join(os.path.dirname(__file__), "..", "freihand")
 sys.path.append(freihand_root)
 
 from utils.eval_util import EvalUtil
-from eval import align_w_scale
+from eval import align_w_scale, curve, createHTML
 
 _AUC_VAL_MIN = 0.0
 _AUC_VAL_MAX = 50.0
@@ -121,11 +121,11 @@ class HPEEvaluator():
       eval_util_rr.feed(kpt_gt - kpt_gt[0], vis, kpt_pred - kpt_pred[0])
       eval_util_pa.feed(kpt_gt, vis, align_w_scale(kpt_gt, kpt_pred))
 
-    mean_ab, _, auc_ab, _, _ = eval_util_ab.get_measures(
+    mean_ab, _, auc_ab, pck_ab, thresh_ab = eval_util_ab.get_measures(
         _AUC_VAL_MIN, _AUC_VAL_MAX, _AUC_STEPS)
-    mean_rr, _, auc_rr, _, _ = eval_util_rr.get_measures(
+    mean_rr, _, auc_rr, pck_rr, thresh_rr = eval_util_rr.get_measures(
         _AUC_VAL_MIN, _AUC_VAL_MAX, _AUC_STEPS)
-    mean_pa, _, auc_pa, _, _ = eval_util_pa.get_measures(
+    mean_pa, _, auc_pa, pck_pa, thresh_pa = eval_util_pa.get_measures(
         _AUC_VAL_MIN, _AUC_VAL_MAX, _AUC_STEPS)
 
     tabular_data = [['absolute', mean_ab, auc_ab],
@@ -138,6 +138,22 @@ class HPEEvaluator():
                      floatfmt='.4f',
                      numalign='right')
     logger.info('Results: \n' + table)
+
+    hpe_res_dir = os.path.splitext(res_file)[0] + '_hpe_eval_{}'.format(
+        self._name)
+    os.makedirs(hpe_res_dir, exist_ok=True)
+
+    createHTML(hpe_res_dir, [
+        curve(thresh_ab, pck_ab, 'Distance in mm',
+              'Percentage of correct keypoints',
+              'PCK curve for absolute keypoint error'),
+        curve(thresh_rr, pck_rr, 'Distance in mm',
+              'Percentage of correct keypoints',
+              'PCK curve for root-relative keypoint error'),
+        curve(thresh_pa, pck_pa, 'Distance in mm',
+              'Percentage of correct keypoints',
+              'PCK curve for Procrustes aligned keypoint error'),
+    ])
 
     results = {
         'absolute': {
