@@ -75,7 +75,7 @@ class OBJ:
       elif values[0] == 'vt':
         self.t.append(list(map(float, values[1:3])))
       elif values[0] == 'mtllib':
-        self.load_material_library(values[1])
+        self._load_material_library(values[1])
       elif values[0] in ('usemtl', 'usemat'):
         material = self.materials.get(values[1], None)
         if material is None:
@@ -127,13 +127,13 @@ class OBJ:
         group.f_n = np.array(group.f_n, dtype=np.int64).reshape(-1, 3)
         group.f_t = np.array(group.f_t, dtype=np.int64).reshape(-1, 3)
 
-  def open_material_file(self, filename):
+  def _open_material_file(self, filename):
     """Overrides for loading from archive/network etc."""
     return open(os.path.join(self.path, filename), 'r')
 
-  def load_material_library(self, filename):
+  def _load_material_library(self, filename):
     material = None
-    file = self.open_material_file(filename)
+    file = self._open_material_file(filename)
 
     for line in file:
       if line.startswith('#'):

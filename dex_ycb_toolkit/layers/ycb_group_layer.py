@@ -34,10 +34,6 @@ class YCBGroupLayer(Module):
     return self._num_obj
 
   @property
-  def class_name(self):
-    return [l.class_name for l in self._layers]
-
-  @property
   def obj_file(self):
     return [l.obj_file for l in self._layers]
 
@@ -76,7 +72,7 @@ class YCBGroupLayer(Module):
                     dtype=torch.float32,
                     device=self.f.device)
     ]
-    r, t = self.pose2rt(p)
+    r, t = self._pose2rt(p)
     for i in inds:
       y = self._layers[i](r[:, i], t[:, i])
       v.append(y[0])
@@ -85,7 +81,7 @@ class YCBGroupLayer(Module):
     n = torch.cat(n, dim=1)
     return v, n
 
-  def pose2rt(self, pose):
+  def _pose2rt(self, pose):
     """Extracts rotations and translations from pose vectors.
 
     Args:
@@ -100,37 +96,3 @@ class YCBGroupLayer(Module):
     t = torch.stack(
         [pose[:, 6 * i + 3:6 * i + 6] for i in range(self._num_obj)], dim=1)
     return r, t
-
-  def get_f_from_inds(self, inds):
-    """Gets faces from sub-layer indices.
-
-    Args:
-      inds: A list of sub-layer indices.
-
-    Returns:
-      f: A tensor of shape [F, 3] containing the faces.
-      m: A tensor of shape [F] containing the face to index mapping.
-    """
-    f = [torch.zeros((0, 3), dtype=self.f.dtype, device=self.f.device)]
-    m = [torch.zeros((0,), dtype=torch.int64, device=self.f.device)]
-    offset = 0
-    for i, x in enumerate(inds):
-      if i > 0:
-        offset += self._layers[inds[i - 1]].v.size(1)
-      f.append(self._layers[x].f + offset)
-      m.append(x * torch.ones(
-          self._layers[x].f.size(0), dtype=torch.int64, device=self.f.device))
-    f = torch.cat(f)
-    m = torch.cat(m)
-    return f, m
-
-  def get_num_verts_from_inds(self, inds):
-    """Gets number of vertices from sub-layer indices.
-
-    Args:
-      inds: A non-empty list of sub-layer indices.
-
-    Returns:
-      num_verts: The number of vertices.
-    """
-    return sum([self._layers[i].v.size(1) for i in inds])

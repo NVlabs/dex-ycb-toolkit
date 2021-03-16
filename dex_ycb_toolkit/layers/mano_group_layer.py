@@ -59,7 +59,7 @@ class MANOGroupLayer(Module):
                     dtype=torch.float32,
                     device=self.f.device)
     ]
-    p, t = self.pose2pt(p)
+    p, t = self._pose2pt(p)
     for i in inds:
       y = self._layers[i](p[:, i], t[:, i])
       v.append(y[0])
@@ -68,7 +68,7 @@ class MANOGroupLayer(Module):
     j = torch.cat(j, dim=1)
     return v, j
 
-  def pose2pt(self, pose):
+  def _pose2pt(self, pose):
     """Extracts pose and trans from pose vectors.
 
     Args:
@@ -83,22 +83,3 @@ class MANOGroupLayer(Module):
     t = torch.stack(
         [pose[:, 51 * i + 48:51 * i + 51] for i in range(self._num_obj)], dim=1)
     return p, t
-
-  def get_f_from_inds(self, inds):
-    """Gets faces from sub-layer indices.
-
-    Args:
-      inds: A list of sub-layer indices.
-
-    Returns:
-      f: A tensor of shape [F, 3] containing the faces.
-      m: A tensor of shape [F] containing the face to index mapping.
-    """
-    f = [torch.zeros((0, 3), dtype=self.f.dtype, device=self.f.device)]
-    m = [torch.zeros((0,), dtype=torch.int64, device=self.f.device)]
-    for i, x in enumerate(inds):
-      f.append(self._layers[x].f + 778 * i)
-      m.append(x * torch.ones(1538, dtype=torch.int64, device=self.f.device))
-    f = torch.cat(f)
-    m = torch.cat(m)
-    return f, m

@@ -18,7 +18,6 @@ Keyboard:
     [1/2/3/...] Toggle camera switch
     [k]         Toggle point mask
     [m]         Toggle YCB/MANO mesh
-    [n]         Step sample
     [SPACE]     Step frame during pause
     [s]         Save PNG (./out.png)
     [q/ESC]     Quit
@@ -107,14 +106,14 @@ class Material(pyglet.graphics.Group):
     else:
       glDisable(GL_TEXTURE_2D)
 
-    glMaterialfv(face, GL_DIFFUSE, (GLfloat * 4)(
-        *(self.material.diffuse + [self.material.opacity])))
-    glMaterialfv(face, GL_AMBIENT, (GLfloat * 4)(
-        *(self.material.ambient + [self.material.opacity])))
-    glMaterialfv(face, GL_SPECULAR, (GLfloat * 4)(
-        *(self.material.specular + [self.material.opacity])))
-    glMaterialfv(face, GL_EMISSION, (GLfloat * 4)(
-        *(self.material.emission + [self.material.opacity])))
+    glMaterialfv(face, GL_DIFFUSE, (GLfloat * 4)(*(self.material.diffuse +
+                                                   [self.material.opacity])))
+    glMaterialfv(face, GL_AMBIENT, (GLfloat * 4)(*(self.material.ambient +
+                                                   [self.material.opacity])))
+    glMaterialfv(face, GL_SPECULAR, (GLfloat * 4)(*(self.material.specular +
+                                                    [self.material.opacity])))
+    glMaterialfv(face, GL_EMISSION, (GLfloat * 4)(*(self.material.emission +
+                                                    [self.material.opacity])))
     glMaterialf(face, GL_SHININESS, self.material.shininess)
 
   def unset_state(self):
@@ -222,7 +221,6 @@ def grid(size=1, n=10, width=1):
   batch.draw()
 
 
-# TODO(ywchao): in future dev should be RGBPointCloudFromMultiCamerasWindow.
 class Window():
 
   def __init__(self, dataloader):
@@ -243,37 +241,33 @@ class Window():
       self.pcd_image.append(
           pyglet.image.ImageData(w, h, 'RGB', (GLubyte * (w * h * 3))()))
 
-    self.load_ycb = self.dataloader.load_ycb
-    if self.load_ycb:
-      reset_pyglet_resource_path('data/models')
-      self.ycb_batch = pyglet.graphics.Batch()
-      self.ycb_vlist = []
-      for o in range(self.dataloader.num_ycb):
-        n = self.dataloader.ycb_count[o]
-        m = self.dataloader.ycb_material[o]
-        g = Material(m)
-        g.set_alpha(0.7)
-        self.ycb_vlist.append(
-            self.ycb_batch.add(n, GL_TRIANGLES, g, 'v3f/stream', 't2f/stream',
-                               'n3f/stream'))
+    reset_pyglet_resource_path(self.dataloader.ycb_model_dir)
+    self.ycb_batch = pyglet.graphics.Batch()
+    self.ycb_vlist = []
+    for o in range(self.dataloader.num_ycb):
+      n = self.dataloader.ycb_count[o]
+      m = self.dataloader.ycb_material[o]
+      g = Material(m)
+      g.set_alpha(0.7)
+      self.ycb_vlist.append(
+          self.ycb_batch.add(n, GL_TRIANGLES, g, 'v3f/stream', 't2f/stream',
+                             'n3f/stream'))
 
-      self.ycb_per_view = isinstance(self.dataloader.ycb_vert[0],
-                                     list) and isinstance(
-                                         self.dataloader.ycb_norm[0], list)
+    self.ycb_per_view = isinstance(self.dataloader.ycb_vert[0],
+                                   list) and isinstance(
+                                       self.dataloader.ycb_norm[0], list)
 
-    self.load_mano = self.dataloader.load_mano
-    if self.load_mano:
-      self.mano_batch = pyglet.graphics.Batch()
-      self.mano_vlist = []
-      self.mano_llist = []
-      for _ in range(self.dataloader.num_mano):
-        self.mano_vlist.append(
-            self.mano_batch.add(4614, GL_TRIANGLES, None, 'v3f/stream',
-                                'n3f/stream',
-                                ('c4f/static', [0.7, 0.7, 0.7, 0.7] * 4614)))
-        self.mano_llist.append(
-            self.mano_batch.add(9228, GL_LINES, None, 'v3f/stream',
-                                ('c3f/static', [0, 0, 0] * 9228)))
+    self.mano_batch = pyglet.graphics.Batch()
+    self.mano_vlist = []
+    self.mano_llist = []
+    for _ in range(self.dataloader.num_mano):
+      self.mano_vlist.append(
+          self.mano_batch.add(4614, GL_TRIANGLES, None, 'v3f/stream',
+                              'n3f/stream',
+                              ('c4f/static', [0.7, 0.7, 0.7, 0.7] * 4614)))
+      self.mano_llist.append(
+          self.mano_batch.add(9228, GL_LINES, None, 'v3f/stream',
+                              ('c3f/static', [0, 0, 0] * 9228)))
 
     self.fps_display = pyglet.window.FPSDisplay(self.window)
 
@@ -332,21 +326,11 @@ class Window():
         self.update_ycb()
 
       if symbol == pyglet.window.key.K:
-        self.state.mask += 1
-        if self.load_ycb and self.load_mano:
-          self.state.mask %= 4
-        elif self.load_ycb ^ self.load_mano:
-          self.state.mask %= 3
-        else:
-          self.state.mask %= 2
+        self.state.mask ^= 1
         self.update_pcd()
 
-      if symbol == pyglet.window.key.M and (self.load_ycb or self.load_mano):
+      if symbol == pyglet.window.key.M:
         self.state.model_off ^= True
-
-      if symbol == pyglet.window.key.N and hasattr(
-          self.dataloader, 'step_sample') and not self.state.paused:
-        self.dataloader.step_sample()
 
       if symbol == pyglet.window.key.SPACE and self.state.paused:
         self.update(ignore_pause=True)
@@ -406,7 +390,7 @@ class Window():
 
       # Set lighting.
       if self.state.lighting:
-        if self.load_mano and not self.state.model_off:
+        if not self.state.model_off:
           ldir = [0.0, 0.0, -1.0]
         else:
           ldir = np.dot(self.state.rotation, (0, 0, 1))
@@ -452,9 +436,7 @@ class Window():
           glEnable(GL_MULTISAMPLE)
 
       # Draw YCB mesh.
-      if self.load_ycb and not self.state.model_off and (
-          not self.ycb_per_view or
-          sum([not x for x in self.state.camera_off]) == 1):
+      if not self.state.model_off:
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
@@ -464,7 +446,7 @@ class Window():
         self.ycb_batch.draw()
 
       # Draw MANO mesh.
-      if self.load_mano and not self.state.model_off:
+      if not self.state.model_off:
         self.mano_batch.draw()
 
       glDisable(GL_LIGHTING)
@@ -496,73 +478,58 @@ class Window():
     # This will cause incorrect texture in drawing.
     self.dataloader.step()
 
-    self.update_pcd()
-    self.update_pcd_normals()
-    self.update_ycb()
-    self.update_mano()
+    self._update_pcd()
+    self._update_pcd_normals()
+    self._update_ycb()
+    self._update_mano()
 
-  def copy(self, dst, src):
+  def _copy(self, dst, src):
     """Copies numpy array to pyglet array."""
     np.array(dst, copy=False)[:] = src.ravel()
 
-  def update_pcd(self):
+  def _update_pcd(self):
     pcd_rgb = self.dataloader.pcd_rgb
     pcd_vert = self.dataloader.pcd_vert
     pcd_tex_coord = self.dataloader.pcd_tex_coord
     pcd_mask = self.dataloader.pcd_mask
-    if self.load_ycb:
-      ycb_mask = self.dataloader.ycb_mask
-    if self.load_mano:
-      mano_mask = self.dataloader.mano_mask
     for c in range(len(self.pcd_image)):
       self.pcd_image[c].set_data('RGB', pcd_rgb[c].strides[0],
                                  pcd_rgb[c].ctypes.data)
-      self.copy(self.pcd_vlist[c].vertices, pcd_vert[c])
-      self.copy(self.pcd_vlist[c].tex_coords, pcd_tex_coord[c])
-      if self.state.mask > 0:
+      self._copy(self.pcd_vlist[c].vertices, pcd_vert[c])
+      self._copy(self.pcd_vlist[c].tex_coords, pcd_tex_coord[c])
+      if self.state.mask == 1:
         vertices = np.array(self.pcd_vlist[c].vertices, copy=False)
-        if self.state.mask == 1:
-          for i in range(3):
-            vertices[i::3][np.logical_not(pcd_mask[c]).ravel()] = 0
-        if self.state.mask == 2 and self.load_ycb and ycb_mask is not None:
-          for i in range(3):
-            vertices[i::3][np.logical_not(ycb_mask[c]).ravel()] = 0
-        if (self.state.mask == 2 and not self.load_ycb or
-            self.state.mask == 3) and mano_mask is not None:
-          for i in range(3):
-            vertices[i::3][np.logical_not(mano_mask[c]).ravel()] = 0
+        for i in range(3):
+          vertices[i::3][np.logical_not(pcd_mask[c]).ravel()] = 0
 
-  def update_pcd_normals(self):
+  def _update_pcd_normals(self):
     if self.state.lighting:
       pcd_vert = self.dataloader.pcd_vert
       for c in range(len(self.pcd_image)):
         dy, dx = np.gradient(pcd_vert[c], axis=(0, 1))
         n = np.cross(dx, dy)
-        self.copy(self.pcd_vlist[c].normals, n)
+        self._copy(self.pcd_vlist[c].normals, n)
 
-  def update_ycb(self):
-    if self.load_ycb and (not self.ycb_per_view or
-                          sum([not x for x in self.state.camera_off]) == 1):
-      ycb_vert = self.dataloader.ycb_vert
-      ycb_norm = self.dataloader.ycb_norm
-      ycb_tex_coords = self.dataloader.ycb_tex_coords
-      if self.ycb_per_view:
-        for c, v in enumerate(self.state.camera_off):
-          if not v:
-            ycb_vert = ycb_vert[c]
-            ycb_norm = ycb_norm[c]
-            break
-      for o in range(self.dataloader.num_ycb):
-        self.copy(self.ycb_vlist[o].vertices, ycb_vert[o])
-        self.copy(self.ycb_vlist[o].normals, ycb_norm[o])
-        self.copy(self.ycb_vlist[o].tex_coords, ycb_tex_coords[o])
+  def _update_ycb(self):
+    ycb_vert = self.dataloader.ycb_vert
+    ycb_norm = self.dataloader.ycb_norm
+    ycb_tex_coords = self.dataloader.ycb_tex_coords
+    if self.ycb_per_view:
+      for c, v in enumerate(self.state.camera_off):
+        if not v:
+          ycb_vert = ycb_vert[c]
+          ycb_norm = ycb_norm[c]
+          break
+    for o in range(self.dataloader.num_ycb):
+      self._copy(self.ycb_vlist[o].vertices, ycb_vert[o])
+      self._copy(self.ycb_vlist[o].normals, ycb_norm[o])
+      self._copy(self.ycb_vlist[o].tex_coords, ycb_tex_coords[o])
 
-  def update_mano(self):
-    if self.load_mano:
-      mano_vert = self.dataloader.mano_vert
-      mano_norm = self.dataloader.mano_norm
-      mano_line = self.dataloader.mano_line
-      for o in range(self.dataloader.num_mano):
-        self.copy(self.mano_vlist[o].vertices, mano_vert[o])
-        self.copy(self.mano_vlist[o].normals, mano_norm[o])
-        self.copy(self.mano_llist[o].vertices, mano_line[o])
+  def _update_mano(self):
+    mano_vert = self.dataloader.mano_vert
+    mano_norm = self.dataloader.mano_norm
+    mano_line = self.dataloader.mano_line
+    for o in range(self.dataloader.num_mano):
+      self._copy(self.mano_vlist[o].vertices, mano_vert[o])
+      self._copy(self.mano_vlist[o].normals, mano_norm[o])
+      self._copy(self.mano_llist[o].vertices, mano_line[o])

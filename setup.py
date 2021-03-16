@@ -9,6 +9,7 @@ setup(
         'open3d-python',
         'opencv-python',
         'pycocotools',
+        'pyglet',
         'pyrender',
         'pyyaml',
         'scikit-image',

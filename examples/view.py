@@ -1,9 +1,8 @@
 import argparse
 import pyglet
 
-import _init_paths
-import dataloader
-import window
+from dex_ycb_toolkit.sequence_loader import SequenceLoader
+from dex_ycb_toolkit.window import Window
 
 
 def parse_args():
@@ -19,19 +18,6 @@ def parse_args():
                       default='cuda:0',
                       type=str)
   parser.add_argument('--no-preload', action='store_true', default=False)
-  parser.add_argument('--use-cache', action='store_true', default=False)
-  parser.add_argument('--load-ycb', action='store_true', default=False)
-  parser.add_argument('--src-ycb',
-                      help='Source of the YCB pose',
-                      default='full',
-                      type=str,
-                      choices=['pcnn', 'fuse', 'full', 'release'])
-  parser.add_argument('--load-mano', action='store_true', default=False)
-  parser.add_argument('--src-mano',
-                      help='Source of the MANO pose',
-                      default='full',
-                      type=str,
-                      choices=['kpts', 'full', 'release'])
   args = parser.parse_args()
   return args
 
@@ -39,15 +25,11 @@ def parse_args():
 if __name__ == '__main__':
   args = parse_args()
 
-  loader = dataloader.DataLoader(args.name,
-                                 device=args.device,
-                                 preload=(not args.no_preload),
-                                 use_cache=args.use_cache,
-                                 load_ycb=args.load_ycb,
-                                 src_ycb=args.src_ycb,
-                                 load_mano=args.load_mano,
-                                 src_mano=args.src_mano)
-  w = window.Window(loader)
+  loader = SequenceLoader(args.name,
+                          device=args.device,
+                          preload=(not args.no_preload),
+                          app='viewer')
+  w = Window(loader)
 
   def run(dt):
     w.update()

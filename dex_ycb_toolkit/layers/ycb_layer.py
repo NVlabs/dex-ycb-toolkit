@@ -1,8 +1,9 @@
+import os
 import torch
 
-import obj
-
 from torch.nn import Module
+
+from ..obj import OBJ
 
 
 class YCBLayer(Module):
@@ -16,7 +17,8 @@ class YCBLayer(Module):
     """
     super(YCBLayer, self).__init__()
 
-    self._path = "data/models"
+    assert 'DEX_YCB_DIR' in os.environ, "environment variable 'DEX_YCB_DIR' is not set"
+    self._path = os.environ['DEX_YCB_DIR'] + "/models"
     self._classes = ('__background__', '002_master_chef_can', '003_cracker_box',
                      '004_sugar_box', '005_tomato_soup_can',
                      '006_mustard_bottle', '007_tuna_fish_can',
@@ -28,7 +30,7 @@ class YCBLayer(Module):
                      '052_extra_large_clamp', '061_foam_brick')
     self._class_name = self._classes[i]
     self._obj_file = self._path + '/' + self._class_name + "/textured_simple.obj"
-    self._obj = obj.OBJ(self._obj_file)
+    self._obj = OBJ(self._obj_file)
     assert len(self._obj.mesh_list) == 1
     assert len(self._obj.mesh_list[0].groups) == 1
     g = self._obj.mesh_list[0].groups[0]
@@ -43,10 +45,6 @@ class YCBLayer(Module):
     self.register_buffer('v', v)
     self.register_buffer('n', n)
     self.register_buffer('f', f)
-
-  @property
-  def class_name(self):
-    return self._class_name
 
   @property
   def obj_file(self):
@@ -77,7 +75,6 @@ class YCBLayer(Module):
     return v, n
 
 
-# TODO(ywchao): move utility functions to separate file?
 # https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula#Matrix_notation
 def rv2dcm(rv):
   """Converts rotation vectors to direction cosine matrices.
@@ -132,43 +129,4 @@ def dcm2rv(dcm):
   rv[i1] = angle[i1].unsqueeze(1) * X[i1] / (2 * s[i1].unsqueeze(1))
   rv[i2] = X[i2] / 2
   rv[i3] = angle[i3].unsqueeze(1) * torch.sign(X[i3]) * Y[i3]
-  return rv
-
-
-# https://en.wikipedia.org/wiki/Rotation_formalisms_in_three_dimensions#Euler_axis%E2%80%93angle_%E2%86%94_quaternion
-def rv2quat(rv):
-  """Converts rotation vectors to quaternions.
-
-  Args:
-    rv: A tensor of shape [B, 3] containing the rotation vectors.
-
-  Returns:
-    quat: A tensor of shape [B, 4] containing the quaternions (x, y, z, w).
-  """
-  angle = torch.norm(rv + 1e-8, p=2, dim=1)
-  axis = rv / angle.unsqueeze(1)
-  s = torch.sin(angle / 2)
-  c = torch.cos(angle / 2)
-  quat = torch.stack((axis[:, 0] * s, axis[:, 1] * s, axis[:, 2] * s, c), dim=1)
-  return quat
-
-
-# https://en.wikipedia.org/wiki/Rotation_formalisms_in_three_dimensions#Euler_axis%E2%80%93angle_%E2%86%94_quaternion
-# https://github.com/kashif/ceres-solver/blob/087462a90dd1c23ac443501f3314d0fcedaea5f7/include/ceres/rotation.h#L178
-def quat2rv(quat):
-  """Converts quaternions to rotation vectors.
-
-  Args:
-    quat: A tensor of shape [B, 4] containing the quaternions (x, y, z, w).
-
-  Returns:
-    rv: A tensor of shape [B, 3] containing the rotation vectors.
-  """
-  s = torch.norm(quat[:, :3], p=2, dim=1)
-  c = quat[:, 3]
-  rv = quat[:, :3]
-  i1 = s > 1e-3
-  i2 = ~i1
-  rv[i1] *= 2 * (torch.atan2(s[i1], c[i1]) / s[i1]).unsqueeze(1)
-  rv[i2] *= 2
   return rv
