@@ -6,3 +6,7 @@
 	path = freihand
 	url = ssh://git@gitlab-master.nvidia.com:12051/ychao/freihand.git
 	branch = dex-ycb-toolkit
+[submodule "manopth"]
+	path = manopth
+	url = ssh://git@gitlab-master.nvidia.com:12051/ychao/manopth.git
+	branch = master
