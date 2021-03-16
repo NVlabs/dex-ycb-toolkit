@@ -16,14 +16,17 @@ This code is tested with Python 3.7.
 2. Install Python package and dependencies:
 
     ```Shell
+    # Install dex-ycb-toolkit
     pip install -e .
-    ```
 
-    and dependencies for `bop_toolkit`:
-
-    ```Shell
+    # Install bop_toolkit dependencies
     cd bop_toolkit
     pip install -r requirements.txt
+    cd ..
+
+    # Install manopth
+    cd manopth
+    pip install -e .
     cd ..
     ```
 
@@ -49,6 +52,16 @@ This code is tested with Python 3.7.
 
     ```Shell
     ./results/fetch_example_results.sh
+    ```
+
+6. Download MANO models and codes (`mano_v1_2.zip`) from `https://mano.is.tue.mpg.de` and place the file under `manopath`. Unzip the file and create symlink:
+
+    ```Shell
+    cd manopth
+    unzip mano_v1_2.zip
+    cd mano
+    ln -s ../mano_v1_2/models models
+    cd ../..
     ```
 
 ### Running examples
@@ -81,4 +94,19 @@ This code is tested with Python 3.7.
 
     ```Shell
     python examples/evaluate_hpe.py
+    ```
+
+6. Viewer:
+
+    ```Shell
+    python examples/view.py --name=20200709-weiy/20200709_141754
+    python examples/view.py --name=20200709-weiy/20200709_141754 --device=cpu
+    python examples/view.py --name=20200709-weiy/20200709_141754 --no-preload
+    ```
+
+7. Renderer:
+
+    ```Shell
+    python examples/render.py --name=20200709-weiy/20200709_141754
+    PYOPENGL_PLATFORM=egl python examples/render.py --name=20200709-weiy/20200709_141754
     ```
