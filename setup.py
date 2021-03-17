@@ -6,7 +6,7 @@ setup(
         'chumpy',
         'numpy',
         'matplotlib',
-        'open3d-python',
+        'open3d',
         'opencv-python',
         'pycocotools',
         'pyglet',
