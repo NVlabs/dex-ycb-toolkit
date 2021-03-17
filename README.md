@@ -72,10 +72,10 @@ This code is tested with Python 3.7.
     python examples/create_dataset.py
     ```
 
-2. Visualizing:
+2. Visualizing object and hand pose of one image sample:
 
     ```Shell
-    python examples/visualize.py
+    python examples/visualize_pose.py
     ```
 
 3. COCO evaluation:
@@ -96,17 +96,17 @@ This code is tested with Python 3.7.
     python examples/evaluate_hpe.py
     ```
 
-6. Viewer:
+6. Viewing a sequence:
 
     ```Shell
-    python examples/view.py --name=20200709-weiy/20200709_141754
-    python examples/view.py --name=20200709-weiy/20200709_141754 --device=cpu
-    python examples/view.py --name=20200709-weiy/20200709_141754 --no-preload
+    python examples/view_sequence.py --name=20200709-weiy/20200709_141754
+    python examples/view_sequence.py --name=20200709-weiy/20200709_141754 --device=cpu
+    python examples/view_sequence.py --name=20200709-weiy/20200709_141754 --no-preload
     ```
 
-7. Renderer:
+7. Rendering a sequence:
 
     ```Shell
-    python examples/render.py --name=20200709-weiy/20200709_141754
-    PYOPENGL_PLATFORM=egl python examples/render.py --name=20200709-weiy/20200709_141754
+    python examples/render_sequence.py --name=20200709-weiy/20200709_141754
+    PYOPENGL_PLATFORM=egl python examples/render_sequence.py --name=20200709-weiy/20200709_141754
     ```
