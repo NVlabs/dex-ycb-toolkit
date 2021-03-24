@@ -7,3 +7,5 @@ results/anno_coco_*.json
 results/anno_hpe_*.pkl
 results/*_eval.log
 results/bop-*_*-test*
+results/grasp_res_*.json
+results/grasp_vis_*

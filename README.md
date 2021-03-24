@@ -96,7 +96,20 @@ This code is tested with Python 3.7.
     python examples/evaluate_hpe.py
     ```
 
-6. Viewing a sequence:
+6. Grasp visualization:
+
+    ```Shell
+    python examples/visualize_grasps.py
+    ```
+
+7. Grasp evaluation:
+
+    ```Shell
+    python examples/evaluate_grasp.py
+    python examples/evaluate_grasp.py --visualize
+    ```
+
+8. Viewing a sequence:
 
     ```Shell
     python examples/view_sequence.py --name=20200709-weiy/20200709_141754
@@ -104,7 +117,7 @@ This code is tested with Python 3.7.
     python examples/view_sequence.py --name=20200709-weiy/20200709_141754 --no-preload
     ```
 
-7. Rendering a sequence:
+9. Rendering a sequence:
 
     ```Shell
     python examples/render_sequence.py --name=20200709-weiy/20200709_141754

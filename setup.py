@@ -11,6 +11,7 @@ setup(
         'pycocotools',
         'pyglet',
         'pyrender',
+        'python-fcl',
         'pyyaml',
         'scikit-image',
         'tabulate',
