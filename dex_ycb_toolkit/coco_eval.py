@@ -26,8 +26,11 @@ class COCOEvaluator():
 
     self._class_names = {**self._dataset.ycb_classes, 22: 'hand'}
 
-    self._anno_file = os.path.join(os.path.dirname(__file__), "..", "results",
+    self._out_dir = os.path.join(os.path.dirname(__file__), "..", "results")
+
+    self._anno_file = os.path.join(self._out_dir,
                                    "anno_coco_{}.json".format(self._name))
+
     if os.path.isfile(self._anno_file):
       print('Found COCO annnotation file.')
     else:
@@ -183,9 +186,16 @@ class COCOEvaluator():
     results.update({'AP-' + name: ap for name, ap in results_per_category})
     return results
 
-  def evaluate(self, res_file, tasks=('bbox', 'segm', 'keypoints')):
-    log_file = os.path.splitext(res_file)[0] + '_coco_eval_{}.log'.format(
-        self._name)
+  def evaluate(self,
+               res_file,
+               out_dir=None,
+               tasks=('bbox', 'segm', 'keypoints')):
+    if out_dir is None:
+      out_dir = self._out_dir
+
+    res_name = os.path.splitext(os.path.basename(res_file))[0]
+    log_file = os.path.join(out_dir,
+                            "coco_eval_{}_{}.log".format(self._name, res_name))
     logger = get_logger(log_file)
 
     coco_gt = COCO(self._anno_file)

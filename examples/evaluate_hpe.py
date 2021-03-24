@@ -11,6 +11,10 @@ def parse_args():
                       help='Path to result file',
                       default=None,
                       type=str)
+  parser.add_argument('--out_dir',
+                      help='Directory to save eval output',
+                      default=None,
+                      type=str)
   args = parser.parse_args()
   return args
 
@@ -24,7 +28,7 @@ def main():
                                  "example_results_hpe_{}.txt".format(args.name))
 
   hpe_eval = HPEEvaluator(args.name)
-  hpe_eval.evaluate(args.res_file)
+  hpe_eval.evaluate(args.res_file, out_dir=args.out_dir)
 
 
 if __name__ == '__main__':

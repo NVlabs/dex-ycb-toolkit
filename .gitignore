@@ -5,7 +5,11 @@ dex_ycb_toolkit.egg-info
 results/example_results*
 results/anno_coco_*.json
 results/anno_hpe_*.pkl
-results/*_eval.log
+results/coco_eval_*.log
+results/bop_eval_*.log
+results/hpe_eval_*.log
+results/grasp_eval_*.log
 results/bop-*_*-test*
+results/hpe_curve_*
 results/grasp_res_*.json
 results/grasp_vis_*

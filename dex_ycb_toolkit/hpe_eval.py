@@ -27,7 +27,9 @@ class HPEEvaluator():
 
     self._dataset = get_dataset(self._name)
 
-    self._anno_file = os.path.join(os.path.dirname(__file__), "..", "results",
+    self._out_dir = os.path.join(os.path.dirname(__file__), "..", "results")
+
+    self._anno_file = os.path.join(self._out_dir,
                                    "anno_hpe_{}.pkl".format(self._name))
 
     if os.path.isfile(self._anno_file):
@@ -97,9 +99,13 @@ class HPEEvaluator():
         results[image_id] = joint_3d
     return results
 
-  def evaluate(self, res_file):
-    log_file = os.path.splitext(res_file)[0] + '_hpe_eval_{}.log'.format(
-        self._name)
+  def evaluate(self, res_file, out_dir=None):
+    if out_dir is None:
+      out_dir = self._out_dir
+
+    res_name = os.path.splitext(os.path.basename(res_file))[0]
+    log_file = os.path.join(out_dir,
+                            "hpe_eval_{}_{}.log".format(self._name, res_name))
     logger = get_logger(log_file)
 
     res = self._load_results(res_file)
@@ -139,11 +145,11 @@ class HPEEvaluator():
                      numalign='right')
     logger.info('Results: \n' + table)
 
-    hpe_res_dir = os.path.splitext(res_file)[0] + '_hpe_eval_{}'.format(
-        self._name)
-    os.makedirs(hpe_res_dir, exist_ok=True)
+    hpe_curve_dir = os.path.join(out_dir,
+                                 "hpe_curve_{}_{}".format(self._name, res_name))
+    os.makedirs(hpe_curve_dir, exist_ok=True)
 
-    createHTML(hpe_res_dir, [
+    createHTML(hpe_curve_dir, [
         curve(thresh_ab, pck_ab, 'Distance in mm',
               'Percentage of correct keypoints',
               'PCK curve for absolute keypoint error'),

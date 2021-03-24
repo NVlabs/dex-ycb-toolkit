@@ -114,7 +114,9 @@ class GraspEvaluator():
     self._r = pyrender.OffscreenRenderer(viewport_width=self._w,
                                          viewport_height=self._h)
 
-    self._anno_file = os.path.join(os.path.dirname(__file__), "..", "results",
+    self._out_dir = os.path.join(os.path.dirname(__file__), "..", "results")
+
+    self._anno_file = os.path.join(self._out_dir,
                                    "anno_grasp_{}.pkl".format(self._name))
     if os.path.isfile(self._anno_file):
       print('Found Grasp annotation file.')
@@ -336,22 +338,25 @@ class GraspEvaluator():
 
     cv2.imwrite(vis_file, im)
 
-  def evaluate(self, bop_res_file, coco_res_file, visualize=False):
-    log_dir = os.path.dirname(bop_res_file)
+  def evaluate(self, bop_res_file, coco_res_file, out_dir=None,
+               visualize=False):
+    if out_dir is None:
+      out_dir = self._out_dir
+
     bop_res_name = os.path.splitext(os.path.basename(bop_res_file))[0]
     coco_res_name = os.path.splitext(os.path.basename(coco_res_file))[0]
     log_file = os.path.join(
-        log_dir, "{}_{}_grasp_eval_{}.log".format(bop_res_name, coco_res_name,
-                                                  self._name))
+        out_dir, "grasp_eval_{}_{}_{}.log".format(self._name, bop_res_name,
+                                                  coco_res_name))
     logger = get_logger(log_file)
 
     grasp_res_file = os.path.join(
-        log_dir, "grasp_res_{}_{}_{}.json".format(bop_res_name, coco_res_name,
-                                                  self._name))
+        out_dir, "grasp_res_{}_{}_{}.json".format(self._name, bop_res_name,
+                                                  coco_res_name))
     if visualize:
       grasp_vis_dir = os.path.join(
-          log_dir, "grasp_vis_{}_{}_{}".format(bop_res_name, coco_res_name,
-                                               self._name))
+          out_dir, "grasp_vis_{}_{}_{}".format(self._name, bop_res_name,
+                                               coco_res_name))
       os.makedirs(grasp_vis_dir, exist_ok=True)
 
     ests = inout.load_bop_results(bop_res_file)

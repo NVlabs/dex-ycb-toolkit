@@ -11,6 +11,10 @@ def parse_args():
                       help='Path to result file',
                       default=None,
                       type=str)
+  parser.add_argument('--out_dir',
+                      help='Directory to save eval output',
+                      default=None,
+                      type=str)
   args = parser.parse_args()
   return args
 
@@ -25,7 +29,7 @@ def main():
         "example_results_coco_{}.json".format(args.name))
 
   coco_eval = COCOEvaluator(args.name)
-  coco_eval.evaluate(args.res_file)
+  coco_eval.evaluate(args.res_file, out_dir=args.out_dir)
 
 
 if __name__ == '__main__':

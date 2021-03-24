@@ -54,7 +54,7 @@ class BOPEvaluator():
     self._setup = self._name.split('_')[0]
     self._split = self._name.split('_')[1]
 
-    self._res_dir = os.path.join(os.path.dirname(__file__), "..", "results")
+    self._out_dir = os.path.join(os.path.dirname(__file__), "..", "results")
     self._bop_dir = os.path.join(self._dataset.data_dir, "bop")
 
     self._p = {
@@ -103,7 +103,7 @@ class BOPEvaluator():
             3, 1)
     return est
 
-  def _derive_bop_results(self, result_name, grasp_only, logger):
+  def _derive_bop_results(self, out_dir, result_name, grasp_only, logger):
     if grasp_only:
       set_str = 'grasp only'
     else:
@@ -137,8 +137,7 @@ class BOPEvaluator():
           score_sign = misc.get_score_signature(correct_th,
                                                 self._p['visib_gt_min'])
           matches_filename = "matches_{}.json".format(score_sign)
-          matches_path = os.path.join(self._res_dir, error_dir_path,
-                                      matches_filename)
+          matches_path = os.path.join(out_dir, error_dir_path, matches_filename)
 
           matches = inout.load_json(matches_path)
 
@@ -202,17 +201,16 @@ class BOPEvaluator():
 
     return results
 
-  def evaluate(self, res_file, renderer_type='python'):
-    log_file = os.path.splitext(res_file)[0] + '_bop_eval_{}.log'.format(
-        self._name)
-    logger = get_logger(log_file)
+  def evaluate(self, res_file, out_dir=None, renderer_type='python'):
+    if out_dir is None:
+      out_dir = self._out_dir
 
     ests = inout.load_bop_results(res_file)
     ests = [self._convert_pose_to_bop(est) for est in ests]
     res_name = os.path.splitext(os.path.basename(res_file))[0]
     bop_res_name = 'bop-{}_{}-{}'.format(res_name.replace('_', '-'),
                                          self._setup, self._split)
-    bop_res_file = os.path.join(self._res_dir, "{}.csv".format(bop_res_name))
+    bop_res_file = os.path.join(out_dir, "{}.csv".format(bop_res_name))
     inout.save_bop_results(bop_res_file, ests)
 
     eval_cmd = [
@@ -220,8 +218,8 @@ class BOPEvaluator():
         os.path.join('scripts', 'eval_bop19.py'),
         '--renderer_type={}'.format(renderer_type),
         '--result_filenames={}'.format(bop_res_file),
-        '--results_path={}'.format(self._res_dir),
-        '--eval_path={}'.format(self._res_dir),
+        '--results_path={}'.format(out_dir),
+        '--eval_path={}'.format(out_dir),
     ]
     cwd = "bop_toolkit"
     env = os.environ.copy()
@@ -231,9 +229,15 @@ class BOPEvaluator():
     if subprocess.run(eval_cmd, cwd=cwd, env=env).returncode != 0:
       raise RuntimeError('BOP evaluation failed.')
 
+    log_file = os.path.join(out_dir,
+                            "bop_eval_{}_{}.log".format(self._name, res_name))
+    logger = get_logger(log_file)
+
     results = {}
-    results['all'] = self._derive_bop_results(bop_res_name, False, logger)
-    results['grasp_only'] = self._derive_bop_results(bop_res_name, True, logger)
+    results['all'] = self._derive_bop_results(out_dir, bop_res_name, False,
+                                              logger)
+    results['grasp_only'] = self._derive_bop_results(out_dir, bop_res_name,
+                                                     True, logger)
 
     logger.info('Evaluation complete.')
 

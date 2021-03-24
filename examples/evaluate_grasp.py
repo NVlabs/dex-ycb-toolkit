@@ -15,6 +15,10 @@ def parse_args():
                       help='Path to COCO result file',
                       default=None,
                       type=str)
+  parser.add_argument('--out_dir',
+                      help='Directory to save eval output',
+                      default=None,
+                      type=str)
   parser.add_argument('--visualize', action='store_true', default=False)
   args = parser.parse_args()
   return args
@@ -35,6 +39,7 @@ def main():
   grasp_eval = GraspEvaluator(args.name)
   grasp_eval.evaluate(args.bop_res_file,
                       args.coco_res_file,
+                      out_dir=args.out_dir,
                       visualize=args.visualize)
 
 

@@ -11,6 +11,10 @@ def parse_args():
                       help='Path to result file',
                       default=None,
                       type=str)
+  parser.add_argument('--out_dir',
+                      help='Directory to save eval output',
+                      default=None,
+                      type=str)
   args = parser.parse_args()
   return args
 
@@ -24,7 +28,7 @@ def main():
                                  "example_results_bop_{}.csv".format(args.name))
 
   bop_eval = BOPEvaluator(args.name)
-  bop_eval.evaluate(args.res_file, renderer_type='python')
+  bop_eval.evaluate(args.res_file, out_dir=args.out_dir, renderer_type='python')
 
 
 if __name__ == '__main__':
