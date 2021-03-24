@@ -61,8 +61,8 @@ class HPEEvaluator():
 
       joint_3d_gt[i] = joint_3d
 
-    print('# total samples: {:5d}'.format(len(self._dataset)))
-    print('# valid samples: {:5d}'.format(len(joint_3d_gt)))
+    print('# total samples: {:6d}'.format(len(self._dataset)))
+    print('# valid samples: {:6d}'.format(len(joint_3d_gt)))
 
     anno = {
         'joint_3d': joint_3d_gt,
@@ -131,7 +131,7 @@ class HPEEvaluator():
     tabular_data = [['absolute', mean_ab, auc_ab],
                     ['root-relative', mean_rr, auc_rr],
                     ['procrustes', mean_pa, auc_pa]]
-    metrics = ['alignment', 'MPJPE (mm)', 'AUC (%)']
+    metrics = ['alignment', 'MPJPE (mm)', 'AUC']
     table = tabulate(tabular_data,
                      headers=metrics,
                      tablefmt='pipe',
