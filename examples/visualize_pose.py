@@ -5,8 +5,9 @@ import torch
 import cv2
 import matplotlib.pyplot as plt
 
+from manopth.manolayer import ManoLayer
+
 from dex_ycb_toolkit.factory import get_dataset
-from dex_ycb_toolkit.layers.mano_group_layer import MANOGroupLayer
 
 
 def create_scene(sample, obj_file):
@@ -43,16 +44,20 @@ def create_scene(sample, obj_file):
     pose[2] *= -1
     node = scene.add(mesh_y[o], pose=pose)
 
-  # Load MANO group layer.
-  mano_sides = [sample['mano_side']]
-  mano_betas = [np.array(sample['mano_betas'], dtype=np.float32)]
-  mano_group_layer = MANOGroupLayer(mano_sides, mano_betas)
-  faces = mano_group_layer.f.numpy()
+  # Load MANO layer.
+  mano_layer = ManoLayer(flat_hand_mean=False,
+                         ncomps=45,
+                         side=sample['mano_side'],
+                         mano_root='manopth/mano/models',
+                         use_pca=True)
+  faces = mano_layer.th_faces.numpy()
+  betas = torch.tensor(sample['mano_betas'], dtype=torch.float32).unsqueeze(0)
 
   # Add MANO meshes.
   if not np.all(pose_m == 0.0):
-    pose_m = torch.from_numpy(pose_m)
-    vert, _ = mano_group_layer(pose_m)
+    pose = torch.from_numpy(pose_m)
+    vert, _ = mano_layer(pose[:, 0:48], betas, pose[:, 48:51])
+    vert /= 1000
     vert = vert.view(778, 3)
     vert = vert.numpy()
     vert[:, 1] *= -1
@@ -76,20 +81,15 @@ def main():
 
   sample = dataset[idx]
 
-  print('Visualizing pose using pyrender 3D viewer')
-
-  scene = create_scene(sample, dataset.obj_file)
-
-  pyrender.Viewer(scene, run_in_thread=True)
+  scene_r = create_scene(sample, dataset.obj_file)
+  scene_v = create_scene(sample, dataset.obj_file)
 
   print('Visualizing pose in camera view using pyrender renderer')
-
-  scene = create_scene(sample, dataset.obj_file)
 
   r = pyrender.OffscreenRenderer(viewport_width=dataset.w,
                                  viewport_height=dataset.h)
 
-  im_render, _ = r.render(scene)
+  im_render, _ = r.render(scene_r)
 
   im_real = cv2.imread(sample['color_file'])
   im_real = im_real[:, :, ::-1]
@@ -97,9 +97,15 @@ def main():
   im = 0.33 * im_real.astype(np.float32) + 0.67 * im_render.astype(np.float32)
   im = im.astype(np.uint8)
 
+  print('Close the window to continue.')
+
   plt.imshow(im)
   plt.tight_layout()
   plt.show()
+
+  print('Visualizing pose using pyrender 3D viewer')
+
+  pyrender.Viewer(scene_v)
 
 
 if __name__ == '__main__':
