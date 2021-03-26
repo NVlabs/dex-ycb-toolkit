@@ -112,14 +112,14 @@ This code is tested with Python 3.7.
 8. Viewing a sequence:
 
     ```Shell
-    python examples/view_sequence.py --name=20200709-weiy/20200709_141754
-    python examples/view_sequence.py --name=20200709-weiy/20200709_141754 --device=cpu
-    python examples/view_sequence.py --name=20200709-weiy/20200709_141754 --no-preload
+    python examples/view_sequence.py --name 20200709-weiy/20200709_141754
+    python examples/view_sequence.py --name 20200709-weiy/20200709_141754 --device cpu
+    python examples/view_sequence.py --name 20200709-weiy/20200709_141754 --no-preload
     ```
 
 9. Rendering a sequence:
 
     ```Shell
-    python examples/render_sequence.py --name=20200709-weiy/20200709_141754
-    PYOPENGL_PLATFORM=egl python examples/render_sequence.py --name=20200709-weiy/20200709_141754
+    python examples/render_sequence.py --name 20200709-weiy/20200709_141754
+    PYOPENGL_PLATFORM=egl python examples/render_sequence.py --name 20200709-weiy/20200709_141754
     ```
