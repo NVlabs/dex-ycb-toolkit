@@ -96,7 +96,6 @@ class BOPEvaluator():
       self._grasp_id[scene_id][im_id] = obj_id
 
   def _convert_pose_to_bop(self, est):
-    est['t'] *= 1000
     est['t'] -= np.dot(
         est['R'],
         _BOP_TRANSLATIONS[self._dataset.ycb_classes[est['obj_id']]]).reshape(

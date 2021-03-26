@@ -442,7 +442,7 @@ class GraspEvaluator():
       est = ests_sorted[0]
       obj_pose_pred = np.eye(4)
       obj_pose_pred[:3, :3] = est['R']
-      obj_pose_pred[:3, 3] = est['t'][:, 0]
+      obj_pose_pred[:3, 3] = est['t'][:, 0] / 1000
       obj_mesh_pred = copy.deepcopy(self._ycb_meshes[ycb_id]['pred'])
       obj_mesh_pred.apply_transform(obj_pose_pred)
       m.add_object('pred_obj', obj_mesh_pred)
