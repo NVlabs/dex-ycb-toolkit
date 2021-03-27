@@ -39,6 +39,9 @@ _FAILURE_GRASP_COLOR = (0.7, 0.7, 0.7, 0.8)
 
 
 class GraspEvaluator():
+  radius = _RADIUS
+  angles = _ANGLES
+  dist_thresholds = _DIST_THRESHOLDS
 
   def __init__(self, name):
     self._name = name

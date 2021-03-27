@@ -110,7 +110,16 @@ This code is tested with Python 3.7.
     PYOPENGL_PLATFORM=egl python examples/evaluate_grasp.py --visualize
     ```
 
-8. Viewing a sequence:
+8. Plot grasp precision-coverage curve:
+
+    ```Shell
+    python examples/plot_grasp_curve.py
+    python examples/plot_grasp_curve.py --name s0_test
+    python examples/plot_grasp_curve.py --name s2_test
+    python examples/plot_grasp_curve.py --name s3_test
+    ```
+
+9. Viewing a sequence:
 
     ```Shell
     python examples/view_sequence.py --name 20200709-weiy/20200709_141754
@@ -118,7 +127,7 @@ This code is tested with Python 3.7.
     python examples/view_sequence.py --name 20200709-weiy/20200709_141754 --no-preload
     ```
 
-9. Rendering a sequence:
+10. Rendering a sequence:
 
     ```Shell
     python examples/render_sequence.py --name 20200709-weiy/20200709_141754

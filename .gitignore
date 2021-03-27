@@ -14,3 +14,4 @@ results/bop-*_*-test*
 results/hpe_curve_*
 results/grasp_res_*.json
 results/grasp_vis_*
+results/grasp_precision_coverage_*.pdf
