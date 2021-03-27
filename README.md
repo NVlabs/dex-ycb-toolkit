@@ -107,6 +107,7 @@ This code is tested with Python 3.7.
     ```Shell
     python examples/evaluate_grasp.py
     python examples/evaluate_grasp.py --visualize
+    PYOPENGL_PLATFORM=egl python examples/evaluate_grasp.py --visualize
     ```
 
 8. Viewing a sequence:
