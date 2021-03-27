@@ -5,6 +5,7 @@ dex_ycb_toolkit.egg-info
 results/example_results*
 results/anno_coco_*.json
 results/anno_hpe_*.pkl
+results/anno_grasp_*.pkl
 results/coco_eval_*.log
 results/bop_eval_*.log
 results/hpe_eval_*.log
