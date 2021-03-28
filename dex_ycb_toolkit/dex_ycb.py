@@ -86,6 +86,9 @@ _BOP_EVAL_SUBSAMPLING_FACTOR = 4
 
 
 class DexYCBDataset():
+  ycb_classes = _YCB_CLASSES
+  mano_joints = _MANO_JOINTS
+  mano_joint_connect = _MANO_JOINT_CONNECT
 
   def __init__(self, setup, split):
     self._setup = setup
@@ -257,18 +260,6 @@ class DexYCBDataset():
   @property
   def obj_file(self):
     return self._obj_file
-
-  @property
-  def ycb_classes(self):
-    return _YCB_CLASSES
-
-  @property
-  def mano_joints(self):
-    return _MANO_JOINTS
-
-  @property
-  def mano_joint_connect(self):
-    return _MANO_JOINT_CONNECT
 
   def get_bop_id_from_idx(self, idx):
     s, c, f = map(lambda x: x.item(), self._mapping[idx])
