@@ -7,11 +7,11 @@ def main():
   for setup in ('s0', 's1', 's2', 's3'):
     for split in ('train', 'val', 'test'):
       name = '{}_{}'.format(setup, split)
-      print('dataset name: {}'.format(name))
+      print('Dataset name: {}'.format(name))
 
       dataset = get_dataset(name)
 
-      print('dataset size: {}'.format(len(dataset)))
+      print('Dataset size: {}'.format(len(dataset)))
 
       sample = dataset[999]
       print('1000th sample:')
