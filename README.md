@@ -48,13 +48,7 @@ This code is tested with Python 3.7.
     └── models/
     ```
 
-5. Download example results:
-
-    ```Shell
-    ./results/fetch_example_results.sh
-    ```
-
-6. Download MANO models and codes (`mano_v1_2.zip`) from `https://mano.is.tue.mpg.de` and place the file under `manopath`. Unzip the file and create symlink:
+5. Download MANO models and codes (`mano_v1_2.zip`) from `https://mano.is.tue.mpg.de` and place the file under `manopath`. Unzip the file and create symlink:
 
     ```Shell
     cd manopth
@@ -62,6 +56,18 @@ This code is tested with Python 3.7.
     cd mano
     ln -s ../mano_v1_2/models models
     cd ../..
+    ```
+
+6. Download example results:
+
+    ```Shell
+    ./results/fetch_example_results.sh
+    ```
+
+7. Download CVPR 2021 results:
+
+    ```Shell
+    ./results/fetch_cvpr2021_results.sh
     ```
 
 ### Running examples
