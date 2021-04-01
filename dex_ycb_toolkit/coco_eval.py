@@ -1,3 +1,5 @@
+"""COCO evaluator."""
+
 import os
 import time
 import numpy as np
@@ -18,8 +20,14 @@ _KPT_OKS_SIGMAS = [0.05] * 21
 
 
 class COCOEvaluator():
+  """COCO evaluator."""
 
   def __init__(self, name):
+    """Constructor.
+
+    Args:
+      name: Dataset name. E.g., 's0_test'.
+    """
     self._name = name
 
     self._dataset = get_dataset(self._name)
@@ -38,6 +46,7 @@ class COCOEvaluator():
       self._generate_anno_file()
 
   def _generate_anno_file(self):
+    """Generates the annotation file."""
     print('Generating COCO annotation file')
     s = time.time()
 
@@ -136,6 +145,16 @@ class COCOEvaluator():
 
   # https://github.com/facebookresearch/detectron2/blob/492cf9c7bae22d7d528f7f58169fcd52a450a0ca/detectron2/evaluation/coco_evaluation.py#L252
   def _derive_coco_results(self, coco_eval, iou_type, logger):
+    """Derives COCO results.
+
+    Args:
+      coco_eval: A COCOEval object.
+      iou_type: 'bbox', 'segm', or 'keypoints'.
+      logger: Logger.
+
+    Returns:
+      A dictionary holding the results.
+    """
     metrics = {
         'bbox': ['AP', 'AP50', 'AP75', 'APs', 'APm', 'APl'],
         'segm': ['AP', 'AP50', 'AP75', 'APs', 'APm', 'APl'],
@@ -190,6 +209,16 @@ class COCOEvaluator():
                res_file,
                out_dir=None,
                tasks=('bbox', 'segm', 'keypoints')):
+    """Evaluates COCO metrics given a result file.
+
+    Args:
+      res_file: Path to the result file.
+      out_dir: Path to the output directory.
+      tasks: A tuple of evaluated tasks. 'bbox', 'segm', and 'keypoints'.
+
+    Returns:
+      A dictionary holding the results.
+    """
     if out_dir is None:
       out_dir = self._out_dir
 

@@ -1,3 +1,5 @@
+"""Wrapper layer to hold a group of MANOLayers."""
+
 import torch
 
 from torch.nn import Module, ModuleList

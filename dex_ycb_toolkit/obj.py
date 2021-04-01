@@ -10,6 +10,7 @@ import numpy as np
 
 
 class Material:
+  """Material."""
   diffuse = [.8, .8, .8]
   ambient = [.2, .2, .2]
   specular = [0., 0., 0.]
@@ -19,12 +20,23 @@ class Material:
   texture_path = None
 
   def __init__(self, name):
+    """Constructor.
+
+    Args:
+      name: Material name.
+    """
     self.name = name
 
 
 class MaterialGroup:
+  """Material group."""
 
   def __init__(self, material):
+    """Constructor.
+
+    Args:
+      material: A Material object.
+    """
     self.material = material
 
     self.f_v = []
@@ -33,15 +45,29 @@ class MaterialGroup:
 
 
 class Mesh:
+  """Mesh."""
 
   def __init__(self, name):
+    """Constructor.
+
+    Args:
+      name: Mesh name.
+    """
     self.name = name
     self.groups = []
 
 
 class OBJ:
+  """3D data loaded from an OBJ file."""
 
   def __init__(self, filename, file=None, path=None):
+    """Constructor.
+
+    Args:
+      filename: Path to the OBJ file.
+      file: An file object.
+      path: Path to the directory storing the material files.
+    """
     self.materials = {}
     self.meshes = {}
     self.mesh_list = []
@@ -128,10 +154,22 @@ class OBJ:
         group.f_t = np.array(group.f_t, dtype=np.int64).reshape(-1, 3)
 
   def _open_material_file(self, filename):
-    """Overrides for loading from archive/network etc."""
+    """Opens a material file.
+
+    Args:
+      filename: Path to the material file.
+
+    Returns:
+      A file object.
+    """
     return open(os.path.join(self.path, filename), 'r')
 
   def _load_material_library(self, filename):
+    """Loads the material from a material file.
+
+    Args:
+      filename: Path to the material file.
+    """
     material = None
     file = self._open_material_file(filename)
 

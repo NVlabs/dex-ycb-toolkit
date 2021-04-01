@@ -1,3 +1,5 @@
+"""Example of running BOP evaluation."""
+
 import argparse
 import os
 

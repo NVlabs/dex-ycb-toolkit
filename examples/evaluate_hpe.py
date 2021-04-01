@@ -1,3 +1,5 @@
+"""Example of running HPE evaluation."""
+
 import argparse
 import os
 

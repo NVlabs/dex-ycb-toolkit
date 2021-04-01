@@ -1,3 +1,5 @@
+"""Example of viewing a sequence."""
+
 import argparse
 import pyglet
 

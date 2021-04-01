@@ -1,3 +1,5 @@
+"""Example of rendering a sequence."""
+
 import argparse
 import torch
 import pyrender
@@ -50,8 +52,17 @@ def parse_args():
 
 
 class Renderer():
+  """Renderer."""
 
   def __init__(self, name, device='cuda:0'):
+    """Constructor.
+
+    Args:
+      name: Sequence name.
+      device: A torch.device string argument. The specified device is used only
+        for certain data loading computations, but not storing the loaded data.
+        Currently the loaded data is always stored as numpy arrays on cpu.
+    """
     assert device in ('cuda', 'cpu') or device.split(':')[0] == 'cuda'
     self._name = name
     self._device = torch.device(device)
@@ -102,11 +113,19 @@ class Renderer():
       os.makedirs(d, exist_ok=True)
 
   def _blend(self, im_real, im_render):
+    """Blends the real and rendered images.
+
+    Args:
+      im_real: A uint8 numpy array of shape [H, W, 3] containing the real image.
+      im_render: A uint8 numpy array of shape [H, W, 3] containing the rendered
+        image.
+    """
     im = 0.33 * im_real.astype(np.float32) + 0.67 * im_render.astype(np.float32)
     im = im.astype(np.uint8)
     return im
 
   def _render_color_seg(self):
+    """Renders and saves color and segmenetation images."""
     print('Rendering color and segmentation')
     for i in range(self._loader.num_frames):
       print('{:03d}/{:03d}'.format(i + 1, self._loader.num_frames))
@@ -167,6 +186,7 @@ class Renderer():
         cv2.imwrite(seg_file, b_color_seg[:, :, ::-1])
 
   def _render_joint(self):
+    """Renders and saves hand joint visualizations."""
     print('Rendering joint')
     for i in range(self._loader.num_frames):
       print('{:03d}/{:03d}'.format(i + 1, self._loader.num_frames))
@@ -204,6 +224,7 @@ class Renderer():
         cv2.imwrite(color_file, color[:, :, ::-1])
 
   def run(self):
+    """Runs the renderer."""
     self._render_color_seg()
     self._render_joint()
 

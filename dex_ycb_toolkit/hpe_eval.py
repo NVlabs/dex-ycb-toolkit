@@ -1,3 +1,5 @@
+"""HPE evaluator."""
+
 import os
 import sys
 import time
@@ -21,8 +23,14 @@ _AUC_STEPS = 100
 
 
 class HPEEvaluator():
+  """HPE evaluator."""
 
   def __init__(self, name):
+    """Constructor.
+
+    Args:
+      name: Dataset name. E.g., 's0_test'.
+    """
     self._name = name
 
     self._dataset = get_dataset(self._name)
@@ -41,6 +49,7 @@ class HPEEvaluator():
     self._anno = self._load_anno_file()
 
   def _generate_anno_file(self):
+    """Generates the annotation file."""
     print('Generating HPE annotation file')
     s = time.time()
 
@@ -76,6 +85,11 @@ class HPEEvaluator():
     print('time: {:7.2f}'.format(e - s))
 
   def _load_anno_file(self):
+    """Loads the annotation file.
+
+    Returns:
+      A dictionary holding the loaded annotation.
+    """
     with open(self._anno_file, 'rb') as f:
       anno = pickle.load(f)
 
@@ -86,6 +100,18 @@ class HPEEvaluator():
     return anno
 
   def _load_results(self, res_file):
+    """Loads results from a result file.
+
+    Args:
+      res_file: Path to the result file.
+
+    Returns:
+      A dictionary holding the loaded results.
+
+    Raises:
+      ValueError: If a line in the result file does not have 64 comma-seperated
+        elements.
+    """
     results = {}
     with open(res_file, 'r') as f:
       for line in f:
@@ -100,6 +126,15 @@ class HPEEvaluator():
     return results
 
   def evaluate(self, res_file, out_dir=None):
+    """Evaluates HPE metrics given a result file.
+
+    Args:
+      res_file: Path to the result file.
+      out_dir: Path to the output directory.
+
+    Returns:
+      A dictionary holding the results.
+    """
     if out_dir is None:
       out_dir = self._out_dir
 

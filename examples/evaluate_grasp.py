@@ -1,3 +1,5 @@
+"""Example of running Grasp evaluation."""
+
 import argparse
 import os
 

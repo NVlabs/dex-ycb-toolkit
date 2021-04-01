@@ -1,3 +1,5 @@
+"""Wrapper layer to hold a group of YCBLayers."""
+
 import torch
 
 from torch.nn import Module, ModuleList

@@ -1,3 +1,5 @@
+"""Example of plotting grasp precision-coverage curve."""
+
 import os
 import argparse
 import json
@@ -64,6 +66,14 @@ def parse_args():
 
 
 def load_grasp_res_file(grasp_res_file):
+  """Loads a Grasp result file.
+
+  Args:
+    grasp_res_file: Path to the Grasp result file.
+
+  Returns:
+    A dictionary holding the loaded Grasp results.
+  """
   def _convert_keys_to_float(x):
     def _try_convert(k):
       try:

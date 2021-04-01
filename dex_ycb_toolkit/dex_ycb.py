@@ -1,3 +1,5 @@
+"""DexYCB dataset."""
+
 import os
 import yaml
 import numpy as np
@@ -86,11 +88,18 @@ _BOP_EVAL_SUBSAMPLING_FACTOR = 4
 
 
 class DexYCBDataset():
+  """DexYCB dataset."""
   ycb_classes = _YCB_CLASSES
   mano_joints = _MANO_JOINTS
   mano_joint_connect = _MANO_JOINT_CONNECT
 
   def __init__(self, setup, split):
+    """Constructor.
+
+    Args:
+      setup: Setup name. 's0', 's1', 's2', or 's3'.
+      split: Split name. 'train', 'val', or 'test'.
+    """
     self._setup = setup
     self._split = split
 
@@ -262,6 +271,15 @@ class DexYCBDataset():
     return self._obj_file
 
   def get_bop_id_from_idx(self, idx):
+    """Returns the BOP scene ID and image ID given an index.
+
+    Args:
+      idx: Index of sample.
+
+    Returns:
+      scene_id: BOP scene ID.
+      im_id: BOP image ID.
+    """
     s, c, f = map(lambda x: x.item(), self._mapping[idx])
     scene_id = s * len(self._serials) + c
     im_id = f

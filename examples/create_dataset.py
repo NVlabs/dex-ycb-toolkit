@@ -1,3 +1,5 @@
+"""Example of creating DexYCB datasets."""
+
 import json
 
 from dex_ycb_toolkit.factory import get_dataset

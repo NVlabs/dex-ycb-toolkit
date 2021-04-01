@@ -1,3 +1,5 @@
+"""Layer to transform YCB mesh vertices with SE3 transformation."""
+
 import os
 import torch
 
@@ -83,7 +85,7 @@ def rv2dcm(rv):
     rv: A tensor of shape [B, 3] containing the rotation vectors.
 
   Returns:
-    dcm: A tensor of shape [B, 3, 3] containing the direction cosine matrices.
+    A tensor of shape [B, 3, 3] containing the direction cosine matrices.
   """
   angle = torch.norm(rv + 1e-8, p=2, dim=1)
   axis = rv / angle.unsqueeze(1)
@@ -111,7 +113,7 @@ def dcm2rv(dcm):
     dcm: A tensor of shape [B, 3, 3] containing the direction cosine matrices.
 
   Returns:
-    rv: A tensor of shape [B, 3] containing the rotation vectors.
+    A tensor of shape [B, 3] containing the rotation vectors.
   """
   X = torch.stack((dcm[:, 2, 1] - dcm[:, 1, 2], dcm[:, 0, 2] - dcm[:, 2, 0],
                    dcm[:, 1, 0] - dcm[:, 0, 1]),

@@ -1,3 +1,5 @@
+"""Grasp evaluator."""
+
 import os
 import sys
 import copy
@@ -39,11 +41,17 @@ _FAILURE_GRASP_COLOR = (0.7, 0.7, 0.7, 0.8)
 
 
 class GraspEvaluator():
+  """Grasp evaluator."""
   radius = _RADIUS
   angles = _ANGLES
   dist_thresholds = _DIST_THRESHOLDS
 
   def __init__(self, name):
+    """Constructor.
+
+    Args:
+      name: Dataset name. E.g., 's0_test'.
+    """
     self._name = name
 
     self._dataset = get_dataset(self._name)
@@ -130,6 +138,7 @@ class GraspEvaluator():
     self._anno = self._load_anno_file()
 
   def _generate_anno_file(self):
+    """Generates the annotation file."""
     print('Generating Grasp annotation file')
     s = time.time()
 
@@ -201,12 +210,26 @@ class GraspEvaluator():
     print('time: {:7.2f}'.format(e - s))
 
   def _load_anno_file(self):
+    """Loads the annotation file.
+
+    Returns:
+      A dictionary holding the loaded annotation.
+    """
     with open(self._anno_file, 'rb') as f:
       anno = pickle.load(f)
 
     return anno
 
   def _load_ycb_mesh(self, ycb_id):
+    """Loads the mesh of a YCB object given a YCB object ID.
+
+    Args:
+      ycb_id: A YCB object ID.
+
+    Returns:
+      A dictionary holding the meshes for visualizing ground-truth pose and
+        predicted pose.
+    """
     obj_file = self._dataset.obj_file[ycb_id]
     ycb_mesh_pred = trimesh.load(obj_file)
     ycb_mesh_gt = copy.deepcopy(ycb_mesh_pred)
@@ -220,6 +243,17 @@ class GraspEvaluator():
     return ycb_mesh
 
   def _get_hand_pc_from_det(self, dets, sample, hand_cat_id=22, radius=0.2):
+    """Gets hand point cloud from hand detection and depth image.
+
+    Args:
+      dets: A dictionary holding the object and hand detections of an image.
+      sample: A dictionary holding an image sample.
+      hand_cat_id: Category ID for the hand class.
+      radius: Radius threshold for filtering points.
+
+    Returns:
+      A float64 numpy array of shape [N, 3] containing the hand point cloud.
+    """
     if hand_cat_id not in dets:
       # Use empty point cloud if hand is not detected.
       hand_pc = np.zeros((0, 3))
@@ -267,6 +301,23 @@ class GraspEvaluator():
   def _compute_grasp_coverage(self, samples, gt_poses, neighborhood_radius,
                               neighborhood_angle):
     """Computes coverage rate of two sets of grasps.
+
+    Args:
+      samples: A float64 numpy array of shape [S, 7] containing the grasps to
+        cover the other set. Each row contains one grasp represented by
+        translation and rotation in quaternion (w, x, y, z).
+      gt_poses: A float64 numpy array of shape [G, 7] containing the grasps to
+        be covered. Each row contains one grasp represented by translation and
+        rotation in quaternion (w, x, y, z).
+      neighborhood_radius: Radius Threshold.
+      neighborhood_angle: A float64 numpy array of shape [] containing the angle
+        threshold.
+
+    Returns:
+      num_covered_poses: A int64 numpy array of shape [] containing the number
+        of covered grasps.
+      covered_sample_id: A int32 numpy array of shape [C] containing the indices
+        of covered grasps.
     """
     if len(samples) == 0:
       return 0.0, np.array([], dtype=np.int32)
@@ -302,8 +353,30 @@ class GraspEvaluator():
     return num_covered_poses, covered_sample_id
 
   def _visualize(self, fx, fy, cx, cy, obj_mesh_gt, hand_mesh_gt, obj_mesh_pred,
-                 hand_pc, pred_grasps, covered_grasp_id, collision_free,
+                 hand_pc, pred_grasps, collision_free, covered_grasp_id,
                  im_real, vis_file):
+    """Visualizes predicted grasps and saves to a image file.
+
+    Args:
+      fx: Focal length in X direction.
+      fy: Focal length in Y direction.
+      cx: Principal point offset in X direction.
+      cy: Principal point offset in Y direction.
+      obj_mesh_gt: Ground-truth object mesh.
+      hand_mesh_gt: Ground-truth hand mesh.
+      obj_mesh_pred: Predicted object mesh.
+      hand_pc: A float64 numpy array of shape [N, 3] containing the hand point
+        cloud.
+      pred_grasps: A list of float64 numpy arrays of shape [4, 4] containing the
+        predicted grasps.
+      collision_free: A bool numpy array of shape [G] indicating whether each
+        predicted grasp is collision free.
+      covered_grasp_id: An int32 numpy array of shape [C] containing the indices
+        of collision free grasps that are covered.
+      im_real: A uint8 numpy array of shape [H, W, 3] containing the color
+        image.
+      vis_file: Path to the visualization file.
+    """
     scene = pyrender.Scene(bg_color=np.array([0.0, 0.0, 0.0, 0.0]),
                            ambient_light=np.array([1.0, 1.0, 1.0]))
 
@@ -343,6 +416,17 @@ class GraspEvaluator():
 
   def evaluate(self, bop_res_file, coco_res_file, out_dir=None,
                visualize=False):
+    """Evaluates Grasp metrics given a BOP result file and a COCO result file.
+
+    Args:
+      bop_res_file: Path to the BOP result file.
+      coco_res_file: Path to the COCO result file.
+      out_dir: Path to the output directory.
+      visualize: Whether to run visualization.
+
+    Returns:
+      A dictionary of results.
+    """
     if out_dir is None:
       out_dir = self._out_dir
 
@@ -536,8 +620,8 @@ class GraspEvaluator():
                                 sample['intrinsics']['ppx'],
                                 sample['intrinsics']['ppy'], obj_mesh_gt,
                                 hand_mesh_gt, obj_mesh_pred, hand_pc,
-                                pred_grasps_m[thr], covered_pred_grasp_id,
-                                collision_free, color, vis_file)
+                                pred_grasps_m[thr], collision_free,
+                                covered_pred_grasp_id, color, vis_file)
 
       results.append({
           'coverage': coverage,

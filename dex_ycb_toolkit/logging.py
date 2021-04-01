@@ -1,8 +1,18 @@
+"""Functions for logging."""
+
 import logging
 import sys
 
 
 def get_logger(log_file):
+  """Gets a logger given the path to the log file.
+
+  Args:
+    name: Path to the log file.
+
+  Returns:
+    A logger.
+  """
   logger = logging.getLogger()
   logger.setLevel(logging.INFO)
 

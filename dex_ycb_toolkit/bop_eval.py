@@ -1,3 +1,5 @@
+"""BOP evaluator."""
+
 import os
 import sys
 import numpy as np
@@ -45,8 +47,14 @@ _BOP_TRANSLATIONS = {
 
 
 class BOPEvaluator():
+  """BOP evaluator."""
 
   def __init__(self, name):
+    """Constructor.
+
+    Args:
+      name: Dataset name. E.g., 's0_test'.
+    """
     self._name = name
 
     self._dataset = get_dataset(self._name)
@@ -96,6 +104,14 @@ class BOPEvaluator():
       self._grasp_id[scene_id][im_id] = obj_id
 
   def _convert_pose_to_bop(self, est):
+    """Converts pose from DexYCB models to BOP YCBV models.
+
+    Args:
+      est: A dictionary holding a single pose estimate.
+
+    Returns:
+      A dictionary holding the converted pose.
+    """
     est['t'] -= np.dot(
         est['R'],
         _BOP_TRANSLATIONS[self._dataset.ycb_classes[est['obj_id']]]).reshape(
@@ -103,6 +119,18 @@ class BOPEvaluator():
     return est
 
   def _derive_bop_results(self, out_dir, result_name, grasp_only, logger):
+    """Derives BOP results.
+
+    Args:
+      out_dir: Path to the output directory.
+      result_name: BOP result name. Should be the name of a folder under out_dir
+        that contains output from BOP evaluation.
+      grasp_only: Whether to derive results on grasped objects only.
+      logger: Logger.
+
+    Returns:
+      A dictionary holding the results.
+    """
     if grasp_only:
       set_str = 'grasp only'
     else:
@@ -201,6 +229,19 @@ class BOPEvaluator():
     return results
 
   def evaluate(self, res_file, out_dir=None, renderer_type='python'):
+    """Evaluates BOP metrics given a result file.
+
+    Args:
+      res_file: Path to the result file.
+      out_dir: Path to the output directory.
+      renderer_type: Renderer type. 'python' or 'cpp'.
+
+    Returns:
+      A dictionary holding the results.
+
+    Raises:
+      RuntimeError: If BOP evaluation failed.
+    """
     if out_dir is None:
       out_dir = self._out_dir
 

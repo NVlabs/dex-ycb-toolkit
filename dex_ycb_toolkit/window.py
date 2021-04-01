@@ -34,9 +34,15 @@ from pyglet.gl import *
 
 # https://stackoverflow.com/a/6802723
 def rotation_matrix(axis, theta):
-  """
-  Returns the rotation matrix associated with counterclockwise rotation about
+  """Returns the rotation matrix associated with counterclockwise rotation about
   the given axis by theta radians.
+
+  Args:
+    axis: Axis represented by a tuple (x, y, z).
+    theta: Theta in radians.
+
+  Returns:
+    A float64 numpy array of shape [3, 3] containing the rotation matrix.
   """
   axis = np.asarray(axis)
   axis = axis / math.sqrt(np.dot(axis, axis))
@@ -50,8 +56,15 @@ def rotation_matrix(axis, theta):
 
 
 class AppState:
+  """Viewer window app state."""
 
   def __init__(self, *args, **kwargs):
+    """Constructor.
+
+    Args:
+      args: Variable length argument list.
+      kwargs: Arbitrary keyword arguments.
+    """
     self.pitch, self.yaw = math.radians(-10), math.radians(-15)
     self.translation = np.array([0, 0, 1], np.float32)
     self.distance = 2
@@ -65,6 +78,7 @@ class AppState:
     self.model_off = False
 
   def reset(self):
+    """Resets the app to an initial state."""
     self.pitch, self.yaw, self.distance = 0, 0, 2
     self.translation[:] = 0, 0, 1
 
@@ -76,6 +90,11 @@ class AppState:
 
 
 def reset_pyglet_resource_path(path):
+  """Resets pyglet's resource path.
+
+  Args:
+    path: Path to be reset to.
+  """
   if not os.path.isabs(path):
     path = os.path.abspath(path)
   pyglet.resource.path = [path]
@@ -83,8 +102,15 @@ def reset_pyglet_resource_path(path):
 
 
 class Material(pyglet.graphics.Group):
+  """Material."""
 
   def __init__(self, material, **kwargs):
+    """Constructor.
+
+    Args:
+      material: A material object loaded from an OBJ file.
+      kwargs: Arbitrary keyword arguments.
+    """
     super(Material, self).__init__(**kwargs)
     self.material = material
     self.texture = None
@@ -135,6 +161,11 @@ class Material(pyglet.graphics.Group):
     return hash((self.texture.id, self.texture.target))
 
   def set_alpha(self, alpha):
+    """Sets the alpha value.
+
+    Args:
+      alpha: Alpha value.
+    """
     if self.texture is None and self.texture_name is None:
       logging.warn('Texture was not loaded successfully')
       return
@@ -166,7 +197,12 @@ class Material(pyglet.graphics.Group):
 
 
 def axes(size=1, width=1):
-  """Draws 3d axes."""
+  """Draws 3D axes.
+
+  Args:
+    size: Axes length.
+    width: Axes width.
+  """
   glLineWidth(width)
   pyglet.graphics.draw(6, GL_LINES,
                        ('v3f', (0, 0, 0, size, 0, 0,
@@ -180,7 +216,13 @@ def axes(size=1, width=1):
 
 
 def frustum(dimensions, intrinsics):
-  """Draws camera's frustum."""
+  """Draws the camera's frustum.
+
+  Args:
+    dimensions: A tuple (w, h) containing the image width and height.
+    intrinsics: A float32 numpy array of size [3, 3] containing the intrinsic
+      matrix.
+  """
   w, h = dimensions[0], dimensions[1]
   batch = pyglet.graphics.Batch()
 
@@ -205,7 +247,13 @@ def frustum(dimensions, intrinsics):
 
 
 def grid(size=1, n=10, width=1):
-  """Draws a grid on xz plane."""
+  """Draws a grid on XZ plane.
+
+  Args:
+    size: Grid line length in X and Z direction.
+    n: Grid number.
+    width: Grid line width.
+  """
   glLineWidth(width)
   s = size / float(n)
   s2 = 0.5 * size
@@ -222,8 +270,14 @@ def grid(size=1, n=10, width=1):
 
 
 class Window():
+  """Viewer window."""
 
   def __init__(self, dataloader):
+    """Constructor:
+
+    Args:
+      dataloader: A SequenceLoader object.
+    """
     self.dataloader = dataloader
 
     self.config = Config(double_buffer=True, samples=8)  # MSAA
@@ -470,6 +524,11 @@ class Window():
       self.fps_display.draw()
 
   def update(self, ignore_pause=False):
+    """Updates the viewer window.
+
+    Args:
+      ignore_pause: Whether to update under a pause.
+    """
     if not ignore_pause and self.state.paused:
       return
 
@@ -484,10 +543,16 @@ class Window():
     self._update_mano()
 
   def _copy(self, dst, src):
-    """Copies numpy array to pyglet array."""
+    """Copies a numpy array to a pyglet array.
+
+    Args:
+      dst: The pyglet array to copy to.
+      src: The numpy array to copy from.
+    """
     np.array(dst, copy=False)[:] = src.ravel()
 
   def _update_pcd(self):
+    """Updates point clouds."""
     pcd_rgb = self.dataloader.pcd_rgb
     pcd_vert = self.dataloader.pcd_vert
     pcd_tex_coord = self.dataloader.pcd_tex_coord
@@ -503,6 +568,7 @@ class Window():
           vertices[i::3][np.logical_not(pcd_mask[c]).ravel()] = 0
 
   def _update_pcd_normals(self):
+    """Updates point cloud normals."""
     if self.state.lighting:
       pcd_vert = self.dataloader.pcd_vert
       for c in range(len(self.pcd_image)):
@@ -511,6 +577,7 @@ class Window():
         self._copy(self.pcd_vlist[c].normals, n)
 
   def _update_ycb(self):
+    """Updates YCB objects."""
     ycb_vert = self.dataloader.ycb_vert
     ycb_norm = self.dataloader.ycb_norm
     ycb_tex_coords = self.dataloader.ycb_tex_coords
@@ -526,6 +593,7 @@ class Window():
       self._copy(self.ycb_vlist[o].tex_coords, ycb_tex_coords[o])
 
   def _update_mano(self):
+    """Updates MANO hands."""
     mano_vert = self.dataloader.mano_vert
     mano_norm = self.dataloader.mano_norm
     mano_line = self.dataloader.mano_line

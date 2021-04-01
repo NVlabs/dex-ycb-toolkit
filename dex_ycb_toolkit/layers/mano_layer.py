@@ -1,3 +1,5 @@
+"""Wrapper layer for manopth ManoLayer."""
+
 import torch
 
 from torch.nn import Module
@@ -5,7 +7,7 @@ from manopth.manolayer import ManoLayer
 
 
 class MANOLayer(Module):
-  """Wrapper layer for manopath ManoLayer."""
+  """Wrapper layer for manopth ManoLayer."""
 
   def __init__(self, side, betas):
     """Constructor.

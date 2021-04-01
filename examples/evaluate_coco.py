@@ -1,3 +1,5 @@
+"""Example of running COCO evaluation."""
+
 import argparse
 import os
 

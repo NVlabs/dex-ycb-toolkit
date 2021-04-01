@@ -1,3 +1,5 @@
+"""DexYCB sequence loader."""
+
 import torch
 import os
 import yaml
@@ -12,6 +14,7 @@ from .layers.ycb_layer import dcm2rv, rv2dcm
 
 
 class SequenceLoader():
+  """DexYCB sequence loader."""
 
   def __init__(
       self,
@@ -20,11 +23,15 @@ class SequenceLoader():
       preload=True,
       app='viewer',
   ):
-    """
+    """Constructor.
+
     Args:
+      name: Sequence name.
       device: A torch.device string argument. The specified device is used only
         for certain data loading computations, but not storing the loaded data.
-        Currently the loaded data is always stored as numpy arrays on cpu.
+        Currently the loaded data is always stored as numpy arrays on CPU.
+      preload: Whether to preload the point cloud or load it online.
+      app: 'viewer' or 'renderer'.
     """
     assert device in ('cuda', 'cpu') or device.split(':')[0] == 'cuda'
     assert app in ('viewer', 'renderer')
@@ -271,6 +278,16 @@ class SequenceLoader():
     self._frame = -1
 
   def _load_frame_rgbd(self, c, i):
+    """Loads an RGB-D frame.
+
+    Args:
+      c: Camera index.
+      i: Frame index.
+
+    Returns:
+      color: A unit8 numpy array of shape [H, W, 3] containing the color image.
+      depth: A uint16 numpy array of shape [H, W] containing the depth image.
+    """
     color_file = self._data_dir[
         c] + '/' + self._color_prefix + "{:06d}.jpg".format(i)
     color = cv2.imread(color_file)
@@ -281,6 +298,19 @@ class SequenceLoader():
     return color, depth
 
   def _deproject_depth_and_filter_points(self, d, c):
+    """Deprojects a depth image to point cloud and filters points.
+
+    Args:
+      d: A uint16 numpy array of shape [F, H, W] or [H, W] containing the depth
+        image in millimeters.
+      c: Camera index.
+
+    Returns:
+      p: A float32 numpy array of shape [F, H, W, 3] or [H, W, 3] containing the
+        point cloud.
+      m: A bool numpy array of shape [F, H, W] or [H, W] containing the mask for
+        points within the tag cooridnate limit.
+    """
     nd = d.ndim
     d = d.astype(np.float32) / 1000
     d = torch.from_numpy(d).to(self._device)
@@ -311,6 +341,25 @@ class SequenceLoader():
                     camera_to_world=True,
                     run_ycb_group_layer=True,
                     return_trans_mat=False):
+    """Transforms poses in SE3 between world and camera frames.
+
+    Args:
+      pose: A float32 numpy array of shape [N, 7] or [N, 6] containing the
+        poses. Each row contains one pose represented by rotation in quaternion
+        (x, y, z, w) or rotation vector and translation.
+      c: Camera index.
+      camera_to_world: Whether from camera to world or from world to camera.
+      run_ycb_group_layer: Whether to return vertices and normals by running the
+        YCB group layer or to return poses.
+      return_trans_mat: Whether to return poses in transformation matrices.
+
+    Returns:
+      If run_ycb_group_layer is True:
+        v: A float32 numpy array of shape [F, V, 3] containing the vertices.
+        n: A float32 numpy array of shape [F, V, 3] containing the normals.
+      else:
+        A float32 numpy array of shape [N, 6] containing the transformed poses.
+    """
     if pose.shape[1] == 7:
       q = pose[:, :4]
       t = pose[:, 4:]
@@ -385,11 +434,13 @@ class SequenceLoader():
     return self._master_intrinsics
 
   def step(self):
+    """Steps the frame."""
     self._frame = (self._frame + 1) % self._num_frames
     if not self._preload:
       self._update_pcd()
 
   def _update_pcd(self):
+    """Updates the point cloud."""
     for c in range(self._num_cameras):
       rgb, d = self._load_frame_rgbd(c, self._frame)
       p, m = self._deproject_depth_and_filter_points(d, c)

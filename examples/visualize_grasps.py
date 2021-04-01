@@ -1,3 +1,5 @@
+"""Example of visualizing pre-generating grasps for each YCB object."""
+
 import os
 import json
 import trimesh

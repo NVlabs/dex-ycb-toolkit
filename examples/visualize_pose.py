@@ -1,3 +1,5 @@
+"""Example of visualizing object and hand pose of one image sample."""
+
 import numpy as np
 import pyrender
 import trimesh
@@ -11,6 +13,15 @@ from dex_ycb_toolkit.factory import get_dataset
 
 
 def create_scene(sample, obj_file):
+  """Creates the pyrender scene of an image sample.
+
+  Args:
+    sample: A dictionary holding an image sample.
+    obj_file: A dictionary holding the paths to YCB OBJ files.
+
+  Returns:
+    A pyrender scene object.
+  """
   # Create pyrender scene.
   scene = pyrender.Scene(bg_color=np.array([0.0, 0.0, 0.0, 0.0]),
                          ambient_light=np.array([1.0, 1.0, 1.0]))
