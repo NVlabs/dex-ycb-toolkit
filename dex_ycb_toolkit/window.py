@@ -1,3 +1,7 @@
+# DexYCB Toolkit
+# Copyright (C) 2021 NVIDIA Corporation
+# Licensed under the GNU General Public License v3.0 [see LICENSE for details]
+
 """Interactive 3D scene viewer using pyglet.
 
 Functions and classes are largely derived from
