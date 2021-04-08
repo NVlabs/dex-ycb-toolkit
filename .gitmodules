@@ -1,12 +1,12 @@
 [submodule "bop_toolkit"]
 	path = bop_toolkit
-	url = ssh://git@gitlab-master.nvidia.com:12051/ychao/bop_toolkit.git
+	url = git@github.com:ywchao/bop_toolkit.git
 	branch = dex-ycb-toolkit
 [submodule "freihand"]
 	path = freihand
-	url = ssh://git@gitlab-master.nvidia.com:12051/ychao/freihand.git
+	url = git@github.com:ywchao/freihand.git
 	branch = dex-ycb-toolkit
 [submodule "manopth"]
 	path = manopth
-	url = ssh://git@gitlab-master.nvidia.com:12051/ychao/manopth.git
+	url = git@github.com:hassony2/manopth.git
 	branch = master
