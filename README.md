@@ -3,7 +3,7 @@
 DexYCB Toolkit is a Python package that provides evaluation and visualization tools for the DexYCB dataset. The dataset and results were initially described in a CVPR 2021 paper:
 
 **DexYCB: A Benchmark for Capturing Hand Grasping of Objects**  
-Yu-Wei Chao, Wei Yang, Yu Xiang, Pavlo Molchanov, Ankur Handa, Jonathan Tremblay, Yashraj S. Narang, Karl Van Wyk, Umar Iqbal Stan Birchfield, Jan Kautz, Dieter Fox  
+Yu-Wei Chao, Wei Yang, Yu Xiang, Pavlo Molchanov, Ankur Handa, Jonathan Tremblay, Yashraj S. Narang, Karl Van Wyk, Umar Iqbal, Stan Birchfield, Jan Kautz, Dieter Fox  
 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2021  
 [ paper ] [ supplementary ] [ video ] [ arxiv ] [ [project site](https://dex-ycb.github.io) ]
 
@@ -12,10 +12,10 @@ IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2021
 Please cite DexYCB Toolkit if it helps your research:
 
     @INPROCEEDINGS{chao:cvpr2021,
-      author = {Yu-Wei Chao and Wei Yang and Yu Xiang and Pavlo Molchanov and Ankur Handa and Jonathan Tremblay and Yashraj S. Narang and Karl {Van Wyk} and Umar Iqbal and Stan Birchfield and Jan Kautz and Dieter Fox},
+      author    = {Yu-Wei Chao and Wei Yang and Yu Xiang and Pavlo Molchanov and Ankur Handa and Jonathan Tremblay and Yashraj S. Narang and Karl {Van Wyk} and Umar Iqbal and Stan Birchfield and Jan Kautz and Dieter Fox},
       booktitle = {IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
-      title = {DexYCB: A Benchmark for Capturing Hand Grasping of Objects},
-      year = {2021},
+      title     = {{DexYCB}: A Benchmark for Capturing Hand Grasping of Objects},
+      year      = {2021},
     }
 
 ### License
