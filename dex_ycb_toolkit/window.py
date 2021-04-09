@@ -376,16 +376,16 @@ class Window():
 
       if symbol == pyglet.window.key.L:
         self.state.lighting ^= True
-        self.update_pcd_normals()
+        self._update_pcd_normals()
 
       # _1, _2, _3, ...
       if 49 <= symbol < 49 + len(self.state.camera_off):
         self.state.camera_off[symbol - 49] ^= True
-        self.update_ycb()
+        self._update_ycb()
 
       if symbol == pyglet.window.key.K:
         self.state.mask ^= 1
-        self.update_pcd()
+        self._update_pcd()
 
       if symbol == pyglet.window.key.M:
         self.state.model_off ^= True
