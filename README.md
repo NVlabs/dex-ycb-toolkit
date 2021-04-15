@@ -173,7 +173,7 @@ For good practice for Python package management, it is recommended to use virtua
 
 DexYCB provides a benchmark to evaluate four tasks: (1) 2D object and keypoint detection (COCO), (2) 6D object pose estimation (BOP), (3) 3D hand pose estimation (HPE), and (4) safe human-to-robot object handover (Grasp).
 
-Below We provide instructions and examples to run these evaluations. To run the examples, you need to first download the example results.
+Below we provide instructions and examples to run these evaluations. To run the examples, you need to first download the example results.
 
 ```Sell
 ./results/fetch_example_results.sh
