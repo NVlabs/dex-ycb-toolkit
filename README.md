@@ -80,8 +80,8 @@ For good practice for Python package management, it is recommended to use virtua
     `$DEX_YCB_PATH` should be a folder with the following structure:
 
     ```Shell
-    ├── 20200709-weiy/
-    ├── 20200813-ceppner/
+    ├── 20200709-subject-01/
+    ├── 20200813-subject-02/
     ├── ...
     ├── calibration/
     └── models/
@@ -113,9 +113,9 @@ For good practice for Python package management, it is recommended to use virtua
     Dataset size: 465504
     1000th sample:
     {
-        "color_file": "/datasets/dex-ycb-20201205/20200709-weiy/20200709_141841/932122060861/color_000053.jpg",
-        "depth_file": "/datasets/dex-ycb-20201205/20200709-weiy/20200709_141841/932122060861/aligned_depth_to_color_000053.png",
-        "label_file": "/datasets/dex-ycb-20201205/20200709-weiy/20200709_141841/932122060861/labels_000053.npz",
+        "color_file": "/datasets/dex-ycb-20201205/20200709-subject-01/20200709_141841/932122060861/color_000053.jpg",
+        "depth_file": "/datasets/dex-ycb-20201205/20200709-subject-01/20200709_141841/932122060861/aligned_depth_to_color_000053.png",
+        "label_file": "/datasets/dex-ycb-20201205/20200709-subject-01/20200709_141841/932122060861/labels_000053.npz",
         "intrinsics": {
             "fx": 613.0762329101562,
             "fy": 611.9989624023438,
@@ -733,9 +733,9 @@ Besides visualizing the ground truths of one image sample, we also provide tools
 
     ```Shell
     # Run on GPU
-    python examples/view_sequence.py --name 20200709-weiy/20200709_141754
+    python examples/view_sequence.py --name 20200709-subject-01/20200709_141754
     # Run on CPU
-    python examples/view_sequence.py --name 20200709-weiy/20200709_141754 --device cpu
+    python examples/view_sequence.py --name 20200709-subject-01/20200709_141754 --device cpu
     ```
 
     The 3D viewer provides some basic controls using mouse and keyboard. You can find the control instructions [here](./dex_ycb_toolkit/window.py#L10-27).
@@ -746,7 +746,7 @@ Besides visualizing the ground truths of one image sample, we also provide tools
 - **Warning:** The above command may consume significant CPU memory (e.g. >8G) due to the preload. You can also load frames online without preloading using a `--no-preload` flag, at the sacrifice of the rendering frame rate:
 
     ```Shell
-    python examples/view_sequence.py --name 20200709-weiy/20200709_141754 --no-preload
+    python examples/view_sequence.py --name 20200709-subject-01/20200709_141754 --no-preload
     ```
 
 - You can list the names of all the provided sequences (1,000 in total) with:
@@ -759,19 +759,19 @@ Besides visualizing the ground truths of one image sample, we also provide tools
     <summary>You should see the following output (click to expand):</summary>
 
     ```
-    20200709-weiy/20200709_141754
-    20200709-weiy/20200709_141841
-    20200709-weiy/20200709_141931
-    20200709-weiy/20200709_142022
-    20200709-weiy/20200709_142123
+    20200709-subject-01/20200709_141754
+    20200709-subject-01/20200709_141841
+    20200709-subject-01/20200709_141931
+    20200709-subject-01/20200709_142022
+    20200709-subject-01/20200709_142123
     .
     .
     .
-    20201022-lmanuelli/20201022_114741
-    20201022-lmanuelli/20201022_114802
-    20201022-lmanuelli/20201022_114824
-    20201022-lmanuelli/20201022_114847
-    20201022-lmanuelli/20201022_114909
+    20201022-subject-10/20201022_114741
+    20201022-subject-10/20201022_114802
+    20201022-subject-10/20201022_114824
+    20201022-subject-10/20201022_114847
+    20201022-subject-10/20201022_114909
     ```
 
     </details>
@@ -782,9 +782,9 @@ Besides visualizing the ground truths of one image sample, we also provide tools
 
     ```Shell
     # Run on GPU
-    python examples/render_sequence.py --name 20200709-weiy/20200709_141754
+    python examples/render_sequence.py --name 20200709-subject-01/20200709_141754
     # Run on CPU
-    python examples/render_sequence.py --name 20200709-weiy/20200709_141754 --device cpu
+    python examples/render_sequence.py --name 20200709-subject-01/20200709_141754 --device cpu
     ```
 
     This will render the color image, segmentation map, and a visualization of the hand joint position for all the frames in the sequence. The rendered images will be saved to `data/render/`.
@@ -815,5 +815,5 @@ Besides visualizing the ground truths of one image sample, we also provide tools
 - Similar to the Grasp evaluation, if you do not have an active display manager, you can run an offscreen renderer on a headless server with EGL:
 
     ```Shell
-    PYOPENGL_PLATFORM=egl python examples/render_sequence.py --name 20200709-weiy/20200709_141754
+    PYOPENGL_PLATFORM=egl python examples/render_sequence.py --name 20200709-subject-01/20200709_141754
     ```
