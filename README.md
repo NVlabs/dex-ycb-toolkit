@@ -5,7 +5,7 @@ DexYCB Toolkit is a Python package that provides evaluation and visualization to
 **DexYCB: A Benchmark for Capturing Hand Grasping of Objects**  
 Yu-Wei Chao, Wei Yang, Yu Xiang, Pavlo Molchanov, Ankur Handa, Jonathan Tremblay, Yashraj S. Narang, Karl Van Wyk, Umar Iqbal, Stan Birchfield, Jan Kautz, Dieter Fox  
 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2021  
-[ [paper](https://dex-ycb.github.io/assets/chao_cvpr2021.pdf) ] [ [supplementary](https://dex-ycb.github.io/assets/chao_cvpr2021_supp.pdf) ] [ [video](https://youtu.be/Q4wyBaZeBw0) ] [ [arxiv](https://arxiv.org/abs/2104.04631) ] [ [project site](https://dex-ycb.github.io) ]
+[ [paper](https://dex-ycb.github.io/assets/chao_cvpr2021.pdf) ] [ [supplementary](https://dex-ycb.github.io/assets/chao_cvpr2021_supp.pdf) ] [ [video](https://youtu.be/Q4wyBaZeBw0) ] [ [arXiv](https://arxiv.org/abs/2104.04631) ] [ [project site](https://dex-ycb.github.io) ]
 
 ### Citing DexYCB Toolkit
 
@@ -77,7 +77,7 @@ For good practice for Python package management, it is recommended to use virtua
     export DEX_YCB_DIR=/path/to/dex-ycb
     ```
 
-    `$DEX_YCB_PATH` should be a folder with the following structure:
+    `$DEX_YCB_DIR` should be a folder with the following structure:
 
     ```Shell
     ├── 20200709-subject-01/
@@ -345,7 +345,7 @@ Below we provide instructions and examples to run these evaluations. To run the 
     - `t`: A `3x1` translation vector (in mm) in `t1 t2 t3`.
     - `time`: Set to `-1`.
 
-    As described in the [supplementary paper Sec C.1](), to speed up the BOP evaluation we only evaluate on a set of subsampled keyframes. As a result, you only need to generate pose estimates for these keyframes. Each image sample will contain a `is_bop_target` key to indicate whether this image is a keyframe used for BOP evaluation. The example below shows how you may use `is_bop_target`:
+    As described in the [supplementary paper Sec. C.1](https://dex-ycb.github.io/assets/chao_cvpr2021_supp.pdf), to speed up the BOP evaluation we only evaluate on a set of subsampled keyframes. As a result, you only need to generate pose estimates for these keyframes. Each image sample will contain a `is_bop_target` key to indicate whether this image is a keyframe used for BOP evaluation. The example below shows how you may use `is_bop_target`:
 
     ```Python
     from dex_ycb_toolkit.factory import get_dataset
