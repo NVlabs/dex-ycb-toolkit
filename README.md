@@ -48,7 +48,7 @@ For good practice for Python package management, it is recommended to use virtua
 1. Clone the repo with `--recursive` and and cd into it:
 
     ```Shell
-    git clone --recursive ssh://git@gitlab-master.nvidia.com:12051/ychao/dex-ycb-toolkit.git
+    git clone --recursive git@github.com:NVlabs/dex-ycb-toolkit.git
     cd dex-ycb-toolkit
     ```
 
