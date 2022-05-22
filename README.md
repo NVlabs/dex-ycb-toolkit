@@ -45,7 +45,7 @@ This code is tested with Python 3.7 on Linux.
 
 For good practice for Python package management, it is recommended to use virtual environments (e.g., `virtualenv` or `conda`) to ensure packages from different projects do not interfere with each other.
 
-1. Clone the repo with `--recursive` and and cd into it:
+1. Clone the repo with `--recursive` and cd into it:
 
     ```Shell
     git clone --recursive git@github.com:NVlabs/dex-ycb-toolkit.git
